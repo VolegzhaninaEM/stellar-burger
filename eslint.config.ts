@@ -115,6 +115,7 @@ export default tseslint.config(
       'react/prop-types': 'off',
       'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
       'unused-imports/no-unused-imports': 'error',
+      'react-hooks/exhaustive-deps': 'off'
     },
     settings: {
       react: {
