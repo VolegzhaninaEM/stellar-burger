@@ -12,3 +12,8 @@ export type TIngredient = {
   image_mobile: string;
   __v: number;
 };
+
+export type TIngredientsResponse = {
+  success: boolean;
+  data: TIngredient[];
+};

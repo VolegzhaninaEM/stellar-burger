@@ -1,11 +1,41 @@
+import { useEffect, useState } from 'react';
+
 import { AppHeader } from '@components/app-header/app-header';
 import { BurgerConstructor } from '@components/burger-contructor/burger-constructor';
 import { BurgerIngredients } from '@components/burger-ingredients/burger-ingredients';
-import { ingredients } from '@utils/ingredients';
+import { apiConfig } from '@utils/constants.ts';
+
+import type { TIngredient, TIngredientsResponse } from '@utils/types.ts';
+import type { JSX } from 'react';
 
 import styles from './app.module.css';
 
-export const App = (): React.JSX.Element => {
+export const App = (): JSX.Element => {
+  const [ingredients, setIngredients] = useState<TIngredient[]>([]);
+
+  const getIngredients = async (): Promise<TIngredientsResponse> => {
+    const response: Response = await fetch(`${apiConfig.baseUrl}/ingredients`);
+    if (!response.ok) {
+      throw new Error(`Ошибка: ${response.status}`);
+    }
+    return (await response.json()) as TIngredientsResponse;
+  };
+
+  useEffect(() => {
+    function getData(): void {
+      getIngredients()
+        .then((res: TIngredientsResponse) => {
+          if (res.success) {
+            setIngredients(res.data);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+
+    getData();
+  }, []);
   return (
     <div className={styles.app}>
       <AppHeader />
