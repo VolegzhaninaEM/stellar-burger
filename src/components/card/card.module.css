@@ -1,0 +1,45 @@
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 272px;
+}
+
+.cardWrap {
+  display: flex;
+  flex-direction: column;
+}
+
+.card:hover {
+  cursor: pointer;
+  opacity: 0.8;
+  transition: 0.3s ease;
+}
+
+.card__price {
+  display: flex;
+  margin: auto;
+}
+
+.card__title {
+  display: flex;
+  align-items: center;
+  min-height: 48px;
+  margin: auto;
+  margin-left: 0;
+  text-align: center;
+}
+
+.card__image {
+  width: 100%;
+  max-width: 240px;
+  margin: auto;
+}
+
+.card__counter {
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin: 0;
+}

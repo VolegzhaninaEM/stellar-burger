@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react';
+import { memo, useEffect, useState } from 'react';
 
 import { AppHeader } from '@components/app-header/app-header';
 import { BurgerConstructor } from '@components/burger-contructor/burger-constructor';
-import { BurgerIngredients } from '@components/burger-ingredients/burger-ingredients';
+import BurgerIngredients from '@components/burger-ingredients/burger-ingredients.tsx';
 import { apiConfig } from '@utils/constants.ts';
 
 import type { TIngredient, TIngredientsResponse } from '@utils/types.ts';
@@ -12,6 +12,8 @@ import styles from './app.module.css';
 
 export const App = (): JSX.Element => {
   const [ingredients, setIngredients] = useState<TIngredient[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [openModal, setOpenModal] = useState(false);
 
   const getIngredients = async (): Promise<TIngredientsResponse> => {
     const response: Response = await fetch(`${apiConfig.baseUrl}/ingredients`);
@@ -29,6 +31,7 @@ export const App = (): JSX.Element => {
             setIngredients(res.data);
           }
         })
+        .finally(() => setLoading(false))
         .catch((err) => {
           console.log(err);
         });
@@ -36,18 +39,32 @@ export const App = (): JSX.Element => {
 
     getData();
   }, []);
+
+  const handleIngredientClick = (): void => {
+    setOpenModal(!openModal);
+  };
+
   return (
-    <div className={styles.app}>
-      <AppHeader />
-      <h1 className={`${styles.title} text text_type_main-large mt-10 mb-5 pl-5`}>
-        Соберите бургер
-      </h1>
-      <main className={`${styles.main} pl-5 pr-5`}>
-        <BurgerIngredients ingredients={ingredients} />
-        <BurgerConstructor ingredients={ingredients} />
-      </main>
-    </div>
+    <>
+      {loading ? (
+        <p>Загрузка…</p>
+      ) : (
+        <div className={styles.app}>
+          <AppHeader />
+          <h1 className={`${styles.title} text text_type_main-large mt-10 mb-5 pl-5`}>
+            Соберите бургер
+          </h1>
+          <main className={`${styles.main} pl-5 pr-5`}>
+            <BurgerIngredients
+              ingredients={ingredients}
+              handleIngredientClick={handleIngredientClick}
+            />
+            <BurgerConstructor ingredients={ingredients} />
+          </main>
+        </div>
+      )}
+    </>
   );
 };
 
-export default App;
+export default memo(App);

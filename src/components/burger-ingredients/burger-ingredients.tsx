@@ -1,51 +1,41 @@
-import { Tab } from '@krgaa/react-developer-burger-ui-components';
+import { memo } from 'react';
 
-import type { TIngredient } from '@utils/types';
+import Cards from '@components/cards/cards.tsx';
+import SwitchTabs from '@components/switch-tabs/switch-tabs.tsx';
+import { ingredientTypes } from '@utils/constants.ts';
+
+import type { TBurgerIngredientsProps } from '@utils/types.ts';
+import type { JSX } from 'react';
 
 import styles from './burger-ingredients.module.css';
 
-type TBurgerIngredientsProps = {
-  ingredients: TIngredient[];
-};
-
-export const BurgerIngredients = ({
+const BurgerIngredients = ({
   ingredients,
-}: TBurgerIngredientsProps): React.JSX.Element => {
+  handleIngredientClick,
+}: TBurgerIngredientsProps): JSX.Element => {
   console.log(ingredients);
 
   return (
-    <section className={styles.burger_ingredients}>
-      <nav>
-        <ul className={styles.menu}>
-          <Tab
-            value="bun"
-            active={true}
-            onClick={() => {
-              /* TODO */
-            }}
-          >
-            Булки
-          </Tab>
-          <Tab
-            value="main"
-            active={false}
-            onClick={() => {
-              /* TODO */
-            }}
-          >
-            Начинки
-          </Tab>
-          <Tab
-            value="sauce"
-            active={false}
-            onClick={() => {
-              /* TODO */
-            }}
-          >
-            Соусы
-          </Tab>
-        </ul>
-      </nav>
-    </section>
+    <div>
+      <section className={styles.ingredients}>
+        <SwitchTabs ingredients={ingredientTypes} />
+        <div className={styles.scroll}>
+          {ingredientTypes.map((item, index) => {
+            return (
+              <Cards
+                data={ingredients}
+                types={ingredientTypes}
+                typesItem={item.type}
+                typesText={item.text}
+                key={index}
+                handleIngredientClick={handleIngredientClick}
+              />
+            );
+          })}
+        </div>
+      </section>
+    </div>
   );
 };
+
+export default memo(BurgerIngredients);
