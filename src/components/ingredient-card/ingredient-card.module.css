@@ -1,0 +1,15 @@
+.card__center {
+  width: 94.36%;
+}
+
+.card__wrap {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card__icon:hover {
+  cursor: pointer;
+  opacity: 0.8;
+  transition: 0.3s ease;
+}

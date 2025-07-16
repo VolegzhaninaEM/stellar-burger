@@ -1,8 +1,11 @@
-import { memo, useEffect, useState } from 'react';
+import { memo, useCallback, useEffect, useState } from 'react';
 
 import { AppHeader } from '@components/app-header/app-header';
 import { BurgerConstructor } from '@components/burger-contructor/burger-constructor';
 import BurgerIngredients from '@components/burger-ingredients/burger-ingredients.tsx';
+import IngredientDetails from '@components/ingredient-details/ingredient-details.tsx';
+import { Modal } from '@components/modal/modal.tsx';
+import OrderDetails from '@components/order-details/order-details.tsx';
 import { apiConfig } from '@utils/constants.ts';
 
 import type { TIngredient, TIngredientsResponse } from '@utils/types.ts';
@@ -14,6 +17,7 @@ export const App = (): JSX.Element => {
   const [ingredients, setIngredients] = useState<TIngredient[]>([]);
   const [loading, setLoading] = useState(true);
   const [openModal, setOpenModal] = useState(false);
+  const [item, setItem] = useState<TIngredient | null>(null);
 
   const getIngredients = async (): Promise<TIngredientsResponse> => {
     const response: Response = await fetch(`${apiConfig.baseUrl}/ingredients`);
@@ -40,16 +44,29 @@ export const App = (): JSX.Element => {
     getData();
   }, []);
 
-  const handleIngredientClick = (): void => {
+  const handleIngredientClick = useCallback(
+    (ingridientItem: TIngredient) => {
+      setItem(ingridientItem);
+      setOpenModal(!openModal);
+    },
+    [openModal]
+  );
+
+  const handleOrderButtonClick = useCallback(() => {
+    setItem(null);
     setOpenModal(!openModal);
-  };
+  }, [openModal]);
+
+  const closeModal = useCallback(() => {
+    setOpenModal(!openModal);
+  }, [openModal]);
 
   return (
     <>
       {loading ? (
         <p>Загрузка…</p>
       ) : (
-        <div className={styles.app}>
+        <div className={styles.app} id="app">
           <AppHeader />
           <h1 className={`${styles.title} text text_type_main-large mt-10 mb-5 pl-5`}>
             Соберите бургер
@@ -58,9 +75,19 @@ export const App = (): JSX.Element => {
             <BurgerIngredients
               ingredients={ingredients}
               handleIngredientClick={handleIngredientClick}
+              extendedClass={styles.scroll}
             />
-            <BurgerConstructor ingredients={ingredients} />
+            <BurgerConstructor
+              ingredients={ingredients}
+              handleOrderButtonClick={handleOrderButtonClick}
+              extendedClass={styles.scroll}
+            />
           </main>
+          {openModal && (
+            <Modal onClose={closeModal}>
+              {item ? <IngredientDetails card={item} /> : <OrderDetails />}
+            </Modal>
+          )}
         </div>
       )}
     </>

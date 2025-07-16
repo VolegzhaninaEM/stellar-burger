@@ -21,6 +21,7 @@ export type TIngredientsResponse = {
 export type TBurgerIngredientsProps = {
   ingredients: TIngredient[];
   handleIngredientClick: (card: TIngredient) => void;
+  extendedClass?: string;
 };
 
 export type TCards = {

@@ -12,6 +12,7 @@ import styles from './burger-ingredients.module.css';
 const BurgerIngredients = ({
   ingredients,
   handleIngredientClick,
+  extendedClass,
 }: TBurgerIngredientsProps): JSX.Element => {
   console.log(ingredients);
 
@@ -19,7 +20,7 @@ const BurgerIngredients = ({
     <div>
       <section className={styles.ingredients}>
         <SwitchTabs ingredients={ingredientTypes} />
-        <div className={styles.scroll}>
+        <div className={extendedClass}>
           {ingredientTypes.map((item, index) => {
             return (
               <Cards

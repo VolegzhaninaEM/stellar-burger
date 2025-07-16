@@ -1,0 +1,29 @@
+.wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 520px;
+  margin: auto;
+}
+
+.image {
+  width: 480px;
+  height: 240px;
+}
+
+.name {
+  text-align: center;
+}
+
+.energyValueWrap {
+  display: flex;
+  padding: 0;
+  list-style-type: none;
+}
+
+.energyValue {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
