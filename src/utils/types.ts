@@ -12,3 +12,33 @@ export type TIngredient = {
   image_mobile: string;
   __v: number;
 };
+
+export type TIngredientsResponse = {
+  success: boolean;
+  data: TIngredient[];
+};
+
+export type TBurgerIngredientsProps = {
+  ingredients: TIngredient[];
+  handleIngredientClick: (card: TIngredient) => void;
+  extendedClass?: string;
+};
+
+export type TCards = {
+  types: TIngredientType[];
+  typesItem: string;
+  typesText: string;
+  data: TIngredient[];
+  handleIngredientClick: (card: TIngredient) => void;
+};
+
+export type TCard = {
+  card: TIngredient;
+  data: TIngredient[];
+  handleIngredientClick: (card: TIngredient) => void;
+};
+
+export type TIngredientType = {
+  type: string;
+  text: string;
+};

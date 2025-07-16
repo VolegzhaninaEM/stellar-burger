@@ -1,0 +1,14 @@
+.burger_button {
+  width: 100px;
+}
+
+.burger_price {
+  justify-content: end;
+  align-items: center;
+}
+
+.burger_currency {
+  display: flex;
+  flex-direction: row;
+  align-items: baseline;
+}
