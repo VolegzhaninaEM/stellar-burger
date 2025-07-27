@@ -1,4 +1,4 @@
-import { ConstructorElement } from '@ya.praktikum/react-developer-burger-ui-components';
+import { ConstructorElement } from '@krgaa/react-developer-burger-ui-components';
 
 import type { TIngredient } from '@utils/types.ts';
 import type { JSX } from 'react';

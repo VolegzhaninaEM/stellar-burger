@@ -1,5 +1,5 @@
 import { Tab } from '@krgaa/react-developer-burger-ui-components';
-import { memo, useState } from 'react';
+import { memo } from 'react';
 
 import type { TIngredientType } from '@utils/types.ts';
 import type { JSX } from 'react';
@@ -8,21 +8,24 @@ import styles from './switch-tabs.module.css';
 
 type SwitchTabsProps = {
   ingredients: TIngredientType[];
+  activeTab: string;
+  onClick: (value: string) => void;
 };
 
-const SwitchTabs = ({ ingredients }: SwitchTabsProps): JSX.Element => {
-  const defaultIngredient = ingredients[0].type;
-  const [current, setCurrent] = useState(defaultIngredient);
-
+const SwitchTabs = ({
+  ingredients,
+  activeTab,
+  onClick,
+}: SwitchTabsProps): JSX.Element => {
   return (
     <nav>
       <ul className={styles.menu}>
         {ingredients.map((ingredient, index: number) => (
           <li key={index}>
             <Tab
-              active={current === ingredient.type}
+              active={activeTab === ingredient.type}
               value={ingredient.type}
-              onClick={setCurrent}
+              onClick={onClick}
             >
               {ingredient.text}
             </Tab>

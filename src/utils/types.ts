@@ -19,7 +19,6 @@ export type TIngredientsResponse = {
 };
 
 export type TBurgerIngredientsProps = {
-  ingredients: TIngredient[];
   handleIngredientClick: (card: TIngredient) => void;
   extendedClass?: string;
 };
@@ -27,7 +26,6 @@ export type TBurgerIngredientsProps = {
 export type TCards = {
   types: TIngredientType[];
   typesItem: string;
-  typesText: string;
   data: TIngredient[];
   handleIngredientClick: (card: TIngredient) => void;
 };
@@ -41,4 +39,8 @@ export type TCard = {
 export type TIngredientType = {
   type: string;
   text: string;
+};
+
+export type TApiError = {
+  message?: string;
 };

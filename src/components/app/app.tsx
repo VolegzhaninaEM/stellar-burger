@@ -1,65 +1,56 @@
-import { memo, useCallback, useEffect, useState } from 'react';
+import { memo, useCallback, useEffect } from 'react';
 
+import { useAppDispatch, useAppSelector } from '../../services/hooks.ts';
+import {
+  clearIngredient,
+  setIngredient,
+} from '../../services/ingredientDetailsSlice.ts';
+import { fetchIngredients } from '../../services/ingredientsSlice.ts';
+import { closeOrderModal, createOrder } from '../../services/orderSlice.ts';
 import { AppHeader } from '@components/app-header/app-header';
 import { BurgerConstructor } from '@components/burger-contructor/burger-constructor';
 import BurgerIngredients from '@components/burger-ingredients/burger-ingredients.tsx';
 import IngredientDetails from '@components/ingredient-details/ingredient-details.tsx';
 import { Modal } from '@components/modal/modal.tsx';
 import OrderDetails from '@components/order-details/order-details.tsx';
-import { apiConfig } from '@utils/constants.ts';
 
-import type { TIngredient, TIngredientsResponse } from '@utils/types.ts';
+import type { AppDispatch } from '@services/store.ts';
+import type { TIngredient } from '@utils/types.ts';
 import type { JSX } from 'react';
 
 import styles from './app.module.css';
 
 export const App = (): JSX.Element => {
-  const [ingredients, setIngredients] = useState<TIngredient[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [openModal, setOpenModal] = useState(false);
-  const [item, setItem] = useState<TIngredient | null>(null);
+  const dispatch: AppDispatch = useAppDispatch();
 
-  const getIngredients = async (): Promise<TIngredientsResponse> => {
-    const response: Response = await fetch(`${apiConfig.baseUrl}/ingredients`);
-    if (!response.ok) {
-      throw new Error(`Ошибка: ${response.status}`);
-    }
-    return (await response.json()) as TIngredientsResponse;
-  };
+  const ingredientsList = useAppSelector((s) => s.ingredients.items);
+  const loading = useAppSelector((s) => s.ingredients.status === 'loading');
+  const item = useAppSelector((s) => s.ingredientDetails);
+  const orderNumber = useAppSelector((s) => s.order.number);
 
   useEffect(() => {
-    function getData(): void {
-      getIngredients()
-        .then((res: TIngredientsResponse) => {
-          if (res.success) {
-            setIngredients(res.data);
-          }
-        })
-        .finally(() => setLoading(false))
-        .catch((err) => {
-          console.log(err);
-        });
-    }
-
-    getData();
-  }, []);
+    dispatch(fetchIngredients()).catch((err) => {
+      console.error(err);
+    });
+  }, [dispatch]);
 
   const handleIngredientClick = useCallback(
-    (ingridientItem: TIngredient) => {
-      setItem(ingridientItem);
-      setOpenModal(!openModal);
+    (ingredientItem: TIngredient) => {
+      dispatch(setIngredient(ingredientItem));
     },
-    [openModal]
+    [dispatch]
   );
-
+  const { bun, ingredients } = useAppSelector((s) => s.burgerConstructor);
   const handleOrderButtonClick = useCallback(() => {
-    setItem(null);
-    setOpenModal(!openModal);
-  }, [openModal]);
+    if (!bun) return;
+    const ids = [bun._id, ...ingredients.map((i) => i._id), bun._id];
+    dispatch(createOrder(ids)).unwrap().catch(console.error);
+  }, [dispatch]);
 
   const closeModal = useCallback(() => {
-    setOpenModal(!openModal);
-  }, [openModal]);
+    dispatch(clearIngredient());
+    dispatch(closeOrderModal());
+  }, [dispatch]);
 
   return (
     <>
@@ -73,17 +64,16 @@ export const App = (): JSX.Element => {
           </h1>
           <main className={`${styles.main} pl-5 pr-5`}>
             <BurgerIngredients
-              ingredients={ingredients}
               handleIngredientClick={handleIngredientClick}
               extendedClass={styles.scroll}
             />
             <BurgerConstructor
-              ingredients={ingredients}
+              ingredients={ingredientsList}
               handleOrderButtonClick={handleOrderButtonClick}
               extendedClass={styles.scroll}
             />
           </main>
-          {openModal && (
+          {(item ?? orderNumber) && (
             <Modal onClose={closeModal}>
               {item ? <IngredientDetails card={item} /> : <OrderDetails />}
             </Modal>

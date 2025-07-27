@@ -1,7 +1,7 @@
 import {
   ConstructorElement,
   DragIcon,
-} from '@ya.praktikum/react-developer-burger-ui-components';
+} from '@krgaa/react-developer-burger-ui-components';
 
 import type { TIngredient } from '@utils/types.ts';
 import type { JSX } from 'react';
