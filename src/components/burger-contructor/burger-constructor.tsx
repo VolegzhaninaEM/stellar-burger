@@ -1,28 +1,38 @@
+import { useAppSelector } from '../../services/hooks.ts';
 import FinalPrice from '@components/final-price/final-price.tsx';
 import IngredientCards from '@components/ingredient-cards/ingredient-cards.tsx';
 
-import type { TIngredient } from '@utils/types';
 import type { JSX } from 'react';
 
 import styles from './burger-constructor.module.css';
 
 type TBurgerConstructorProps = {
-  ingredients: TIngredient[];
   handleOrderButtonClick: () => void;
   extendedClass?: string;
 };
 
 export const BurgerConstructor = ({
-  ingredients,
   handleOrderButtonClick,
   extendedClass,
 }: TBurgerConstructorProps): JSX.Element => {
-  console.log(ingredients);
+  const { ingredients, buns } = useAppSelector((s) => s.burgerConstructor);
 
   return (
     <section className={styles.burger_constructor}>
-      <IngredientCards data={ingredients} extendedClass={extendedClass} />
-      <FinalPrice data={ingredients} handleOrderButtonClick={handleOrderButtonClick} />
+      <IngredientCards extendedClass={extendedClass} />
+      {buns !== null ? (
+        <FinalPrice
+          ingredients={ingredients}
+          buns={buns}
+          handleOrderButtonClick={handleOrderButtonClick}
+        />
+      ) : (
+        <p className={`text text_type_main-default text_color_inactive`}>
+          {ingredients.length > 0
+            ? 'Добавьте булку в конструктор бургера'
+            : 'Выберите ингредиенты и перетащите их в конструктор бургера'}
+        </p>
+      )}
     </section>
   );
 };

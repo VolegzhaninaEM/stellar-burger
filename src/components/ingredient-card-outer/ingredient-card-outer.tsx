@@ -7,17 +7,16 @@ import styles from './ingredient-card-outer.module.css';
 
 const IngredientCardOuter = (props: {
   position: 'top' | 'bottom' | undefined;
-  data: TIngredient[];
-  positionText: string;
+  bun: TIngredient;
 }): JSX.Element => {
   return (
     <div className={`${styles.card__outer} ml-8 mr-4 mb-4 mt-4`}>
       <ConstructorElement
         type={props.position}
         isLocked={true}
-        text={`${props.data[0]?.name} ${props.positionText}`}
-        price={props.data[0]?.price}
-        thumbnail={props.data[0]?.image}
+        text={`${props.bun?.name} ${props.position === 'top' ? '(верх)' : '(низ)'}`}
+        price={props.bun?.price}
+        thumbnail={props.bun?.image}
       />
     </div>
   );

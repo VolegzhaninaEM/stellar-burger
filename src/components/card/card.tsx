@@ -1,5 +1,6 @@
 import { Counter, CurrencyIcon } from '@krgaa/react-developer-burger-ui-components';
 import { memo } from 'react';
+import { useDrag } from 'react-dnd';
 
 import type { TCard } from '@utils/types.ts';
 import type { JSX } from 'react';
@@ -7,8 +8,17 @@ import type { JSX } from 'react';
 import cardStyle from './card.module.css';
 
 const Card = (props: TCard): JSX.Element => {
+  const [{ opacity }, dragIngredient] = useDrag({
+    type: 'ingredient',
+    item: { ingredient: props.card, id: props.card._id, type: props.card.type },
+    collect: (monitor) => ({
+      opacity: monitor.isDragging() ? 0.5 : 1,
+    }),
+  });
   return (
-    <li
+    <div
+      ref={dragIngredient as unknown as React.Ref<HTMLDivElement>}
+      style={{ opacity: opacity }}
       className={cardStyle.card}
       onClick={() => props.handleIngredientClick(props.card)}
     >
@@ -27,8 +37,8 @@ const Card = (props: TCard): JSX.Element => {
           {props.card.name}
         </h3>
       </div>
-    </li>
-  );
+    </div>
+  ) as JSX.Element;
 };
 
 export default memo(Card);

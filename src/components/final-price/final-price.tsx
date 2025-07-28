@@ -7,20 +7,23 @@ import type { JSX } from 'react';
 import styles from './final-price.module.css';
 
 type TPriceData = {
-  data: TIngredient[];
+  ingredients: TIngredient[];
+  buns: TIngredient;
   handleOrderButtonClick: () => void;
 };
 
-const FinalPrice = ({ data, handleOrderButtonClick }: TPriceData): JSX.Element => {
+const FinalPrice = ({
+  ingredients,
+  buns,
+  handleOrderButtonClick,
+}: TPriceData): JSX.Element => {
   const totalPrice = useMemo(() => {
-    if (!data) return 0;
-
-    return data.reduce((sum, item) => {
-      // булка считается дважды
-      const multiplier = item.type === 'bun' ? 2 : 1;
-      return sum + item.price * multiplier;
+    if (!ingredients) return buns ? buns.price * 2 : 0;
+    const ingredientsPrice = ingredients.reduce((sum, item) => {
+      return sum + item.price;
     }, 0);
-  }, [data]);
+    return ingredientsPrice + buns.price * 2;
+  }, [ingredients, buns]);
   return (
     <div className={`${styles.burger_currency} ${styles.burger_price}`}>
       <div className={styles.burger_currency}>

@@ -1,4 +1,6 @@
 import { memo, useCallback, useEffect } from 'react';
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 
 import { useAppDispatch, useAppSelector } from '../../services/hooks.ts';
 import {
@@ -23,7 +25,6 @@ import styles from './app.module.css';
 export const App = (): JSX.Element => {
   const dispatch: AppDispatch = useAppDispatch();
 
-  const ingredientsList = useAppSelector((s) => s.ingredients.items);
   const loading = useAppSelector((s) => s.ingredients.status === 'loading');
   const item = useAppSelector((s) => s.ingredientDetails);
   const orderNumber = useAppSelector((s) => s.order.number);
@@ -40,10 +41,14 @@ export const App = (): JSX.Element => {
     },
     [dispatch]
   );
-  const { bun, ingredients } = useAppSelector((s) => s.burgerConstructor);
+  const { buns, ingredients } = useAppSelector((s) => s.burgerConstructor);
   const handleOrderButtonClick = useCallback(() => {
-    if (!bun) return;
-    const ids = [bun._id, ...ingredients.map((i) => i._id), bun._id];
+    if (!buns) return;
+    const ids: string[] = [
+      buns._id,
+      ...ingredients.map((i: TIngredient): string => i._id),
+      buns._id,
+    ];
     dispatch(createOrder(ids)).unwrap().catch(console.error);
   }, [dispatch]);
 
@@ -62,17 +67,19 @@ export const App = (): JSX.Element => {
           <h1 className={`${styles.title} text text_type_main-large mt-10 mb-5 pl-5`}>
             Соберите бургер
           </h1>
-          <main className={`${styles.main} pl-5 pr-5`}>
-            <BurgerIngredients
-              handleIngredientClick={handleIngredientClick}
-              extendedClass={styles.scroll}
-            />
-            <BurgerConstructor
-              ingredients={ingredientsList}
-              handleOrderButtonClick={handleOrderButtonClick}
-              extendedClass={styles.scroll}
-            />
-          </main>
+          <DndProvider backend={HTML5Backend}>
+            <main className={`${styles.main} pl-5 pr-5`}>
+              <BurgerIngredients
+                handleIngredientClick={handleIngredientClick}
+                extendedClass={styles.scroll}
+              />
+              <BurgerConstructor
+                handleOrderButtonClick={handleOrderButtonClick}
+                extendedClass={styles.scroll}
+              />
+            </main>
+          </DndProvider>
+
           {(item ?? orderNumber) && (
             <Modal onClose={closeModal}>
               {item ? <IngredientDetails card={item} /> : <OrderDetails />}

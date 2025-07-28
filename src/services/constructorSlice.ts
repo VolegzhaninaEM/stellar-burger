@@ -4,18 +4,18 @@ import type { PayloadAction } from '@reduxjs/toolkit';
 import type { TIngredient } from '@utils/types.ts';
 
 type ConstructorState = {
-  bun: TIngredient | null;
+  buns: TIngredient | null;
   ingredients: TIngredient[];
 };
 
-const initialState: ConstructorState = { bun: null, ingredients: [] };
+const initialState: ConstructorState = { buns: null, ingredients: [] };
 
 const constructorSlice = createSlice({
   name: 'burgerConstructor',
   initialState,
   reducers: {
     setBun: (state, { payload }: PayloadAction<TIngredient>) => {
-      state.bun = payload;
+      state.buns = payload;
     },
     addIngredient: (state, { payload }: PayloadAction<TIngredient>) => {
       state.ingredients.push({ ...payload, _id: crypto.randomUUID() });

@@ -14,12 +14,13 @@ const Cards = (props: TCards): JSX.Element => {
       <ul className={cardsStyle.cards}>
         {data?.map((card: TIngredient) => {
           return card.type === typesItem ? (
-            <Card
-              data={data}
-              key={card._id}
-              card={card}
-              handleIngredientClick={handleIngredientClick}
-            />
+            <li key={card._id}>
+              <Card
+                data={data}
+                card={card}
+                handleIngredientClick={handleIngredientClick}
+              />
+            </li>
           ) : null;
         })}
       </ul>

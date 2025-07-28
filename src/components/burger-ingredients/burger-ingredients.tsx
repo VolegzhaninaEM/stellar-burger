@@ -54,6 +54,7 @@ const BurgerIngredients = ({
 
     setActiveTab(closestSectionType);
   };
+
   useEffect(() => {
     const scrollElement = containerRef.current;
     if (!scrollElement) return;
