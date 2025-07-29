@@ -11,7 +11,7 @@ import { useAppSelector } from '../../services/hooks.ts';
 import IngredientCardOuter from '@components/ingredient-card-outer/ingredient-card-outer.tsx';
 import IngredientCard from '@components/ingredient-card/ingredient-card';
 
-import type { TIngredient } from '@utils/types.ts';
+import type { TConstructorIngredient, TIngredient } from '@utils/types.ts';
 import type { JSX } from 'react';
 
 import ingredientCardSstyles from './ingredient-cards.module.css';
@@ -20,8 +20,8 @@ const IngredientCards = (props: { extendedClass?: string }): JSX.Element => {
   const { buns, ingredients } = useAppSelector((s) => s.burgerConstructor);
   const dispatch = useDispatch();
 
-  const addElement = (element: TIngredient): void => {
-    element = { ...element, _id: element?._id };
+  const addElement = (element: TConstructorIngredient): void => {
+    element = { ...element, uniqueId: element?._id };
     if (element.type === 'bun') {
       dispatch(setBun(element));
     }
@@ -41,7 +41,7 @@ const IngredientCards = (props: { extendedClass?: string }): JSX.Element => {
         opacity: monitor.isOver() ? 0.5 : 1,
       };
     },
-    drop: (item: { ingredient: TIngredient }): void => {
+    drop: (item: { ingredient: TConstructorIngredient }): void => {
       addElement(item.ingredient);
     },
   }));

@@ -30,9 +30,7 @@ export const App = (): JSX.Element => {
   const orderNumber = useAppSelector((s) => s.order.number);
 
   useEffect(() => {
-    dispatch(fetchIngredients()).catch((err) => {
-      console.error(err);
-    });
+    void dispatch(fetchIngredients());
   }, [dispatch]);
 
   const handleIngredientClick = useCallback(
@@ -49,7 +47,7 @@ export const App = (): JSX.Element => {
       ...ingredients.map((i: TIngredient): string => i._id),
       buns._id,
     ];
-    dispatch(createOrder(ids)).unwrap().catch(console.error);
+    void dispatch(createOrder(ids));
   }, [dispatch, buns, ingredients]);
 
   const closeModal = useCallback(() => {
@@ -86,7 +84,7 @@ export const App = (): JSX.Element => {
           )}
           {orderNumber !== null && (
             <Modal onClose={closeModal}>
-              <OrderDetails />
+              <OrderDetails orderNumber={orderNumber} />
             </Modal>
           )}
         </div>

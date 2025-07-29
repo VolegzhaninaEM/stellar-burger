@@ -44,3 +44,7 @@ export type TIngredientType = {
 export type TApiError = {
   message?: string;
 };
+
+export type TConstructorIngredient = TIngredient & {
+  uniqueId: string;
+};
