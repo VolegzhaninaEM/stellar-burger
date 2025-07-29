@@ -6,12 +6,17 @@ import {
   moveIngredient,
   removeIngredient,
   setBun,
-} from '../../services/constructorSlice.ts';
-import { useAppSelector } from '../../services/hooks.ts';
+} from '../../services/constructorSlice';
+import { useAppSelector } from '../../services/hooks';
+import {
+  decrementCounter,
+  incrementCounter,
+  resetCounter,
+} from '../../services/ingredientsSlice';
 import IngredientCardOuter from '@components/ingredient-card-outer/ingredient-card-outer.tsx';
 import IngredientCard from '@components/ingredient-card/ingredient-card';
 
-import type { TConstructorIngredient, TIngredient } from '@utils/types.ts';
+import type { TConstructorIngredient } from '@utils/types.ts';
 import type { JSX } from 'react';
 
 import ingredientCardSstyles from './ingredient-cards.module.css';
@@ -23,15 +28,23 @@ const IngredientCards = (props: { extendedClass?: string }): JSX.Element => {
   const addElement = (element: TConstructorIngredient): void => {
     element = { ...element, uniqueId: element?._id };
     if (element.type === 'bun') {
+      if (buns) {
+        dispatch(decrementCounter(element.uniqueId));
+        dispatch(resetCounter(element.uniqueId));
+      }
       dispatch(setBun(element));
+      dispatch(incrementCounter(element.uniqueId));
+      dispatch(incrementCounter(element.uniqueId));
     }
     if (element.type !== 'bun') {
       dispatch(addIngredient(element));
+      dispatch(incrementCounter(element.uniqueId));
     }
   };
 
-  const deleteElement = (ingredient: TIngredient): void => {
-    dispatch(removeIngredient(ingredient._id));
+  const deleteElement = (ingredient: TConstructorIngredient): void => {
+    dispatch(removeIngredient(ingredient.uniqueId));
+    dispatch(incrementCounter(ingredient.uniqueId));
   };
 
   const [{ opacity }, dropIngredient] = useDrop(() => ({
@@ -54,11 +67,11 @@ const IngredientCards = (props: { extendedClass?: string }): JSX.Element => {
     >
       {buns && <IngredientCardOuter position={'top'} bun={buns} />}
       <div className={props.extendedClass}>
-        {ingredients?.map((ingredient: TIngredient, index: number) => {
+        {ingredients?.map((ingredient: TConstructorIngredient, index: number) => {
           if (!ingredient) return null;
           return (
             <IngredientCard
-              key={ingredient._id}
+              key={ingredient.uniqueId}
               ingredient={ingredient}
               deleteElement={deleteElement}
               index={index}

@@ -4,7 +4,7 @@ import {
 } from '@krgaa/react-developer-burger-ui-components';
 import { useDrag, useDrop } from 'react-dnd';
 
-import type { TIngredient } from '@utils/types.ts';
+import type { TConstructorIngredient } from '@utils/types.ts';
 import type { JSX } from 'react';
 
 import ingredientCardStyles from './ingredient-card.module.css';
@@ -19,8 +19,8 @@ const IngredientCard = ({
   index,
   moveIngredient,
 }: {
-  ingredient: TIngredient;
-  deleteElement: (ingredient: TIngredient) => void;
+  ingredient: TConstructorIngredient;
+  deleteElement: (ingredient: TConstructorIngredient) => void;
   index: number;
   moveIngredient: (from: number, to: number) => void;
 }): JSX.Element => {

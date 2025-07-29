@@ -4,7 +4,7 @@ import { v4 as uuidv4 } from 'uuid';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import type { TConstructorIngredient, TIngredient } from '@utils/types.ts';
 type ConstructorState = {
-  buns: TIngredient | null;
+  buns: TConstructorIngredient | null;
   ingredients: TConstructorIngredient[];
 };
 
@@ -14,8 +14,16 @@ const constructorSlice = createSlice({
   name: 'burgerConstructor',
   initialState,
   reducers: {
-    setBun: (state, { payload }: PayloadAction<TConstructorIngredient>) => {
-      state.buns = payload;
+    setBun: {
+      reducer: (state, { payload }: PayloadAction<TConstructorIngredient>) => {
+        state.buns = payload;
+      },
+      prepare: (newBun: TConstructorIngredient) => {
+        return {
+          payload: newBun,
+          meta: { oldBunId: null },
+        };
+      },
     },
     addIngredient: {
       reducer: (state, { payload }: PayloadAction<TConstructorIngredient>) => {
@@ -26,7 +34,7 @@ const constructorSlice = createSlice({
       }),
     },
     removeIngredient: (state, { payload }: PayloadAction<string>) => {
-      state.ingredients = state.ingredients.filter((i) => i?._id !== payload);
+      state.ingredients = state.ingredients.filter((i) => i?.uniqueId !== payload);
     },
     moveIngredient: (
       state,
