@@ -21,7 +21,7 @@ const constructorSlice = createSlice({
       state.ingredients.push({ ...payload, _id: crypto.randomUUID() });
     },
     removeIngredient: (state, { payload }: PayloadAction<string>) => {
-      state.ingredients = state.ingredients.filter((i) => i._id !== payload);
+      state.ingredients = state.ingredients.filter((i) => i?._id !== payload);
     },
     moveIngredient: (
       state,

@@ -1,9 +1,9 @@
-import { useMemo } from 'react';
 import { useDrop } from 'react-dnd';
 import { useDispatch } from 'react-redux';
 
 import {
   addIngredient,
+  moveIngredient,
   removeIngredient,
   setBun,
 } from '../../services/constructorSlice.ts';
@@ -18,27 +18,10 @@ import ingredientCardSstyles from './ingredient-cards.module.css';
 
 const IngredientCards = (props: { extendedClass?: string }): JSX.Element => {
   const { buns, ingredients } = useAppSelector((s) => s.burgerConstructor);
-  const ingredientsId: string[] = [];
-  const prices: number[] = [];
   const dispatch = useDispatch();
-  useMemo(() => {
-    if (buns) {
-      ingredientsId.push(buns._id);
-      prices.push(buns.price * 2);
-    }
-  }, [buns, ingredientsId, prices]);
-
-  useMemo(
-    () =>
-      ingredients?.filter((ingredient) => {
-        ingredientsId?.push(ingredient._id);
-        prices?.push(ingredient.price);
-      }),
-    [ingredients, ingredientsId, prices]
-  );
 
   const addElement = (element: TIngredient): void => {
-    element = { ...element, _id: element._id };
+    element = { ...element, _id: element?._id };
     if (element.type === 'bun') {
       dispatch(setBun(element));
     }
@@ -71,12 +54,17 @@ const IngredientCards = (props: { extendedClass?: string }): JSX.Element => {
     >
       {buns && <IngredientCardOuter position={'top'} bun={buns} />}
       <div className={props.extendedClass}>
-        {ingredients?.map((ingredient: TIngredient) => {
+        {ingredients?.map((ingredient: TIngredient, index: number) => {
+          if (!ingredient) return null;
           return (
             <IngredientCard
               key={ingredient._id}
               ingredient={ingredient}
               deleteElement={deleteElement}
+              index={index}
+              moveIngredient={(from: number, to: number) =>
+                dispatch(moveIngredient({ dragIndex: from, hoverIndex: to }))
+              }
             />
           );
         })}

@@ -28,11 +28,16 @@ async function checkResponse<T>(res: Response): Promise<T> {
 export async function request<T>(
   endpoint: string,
   method: HttpMethod = 'GET',
-  body?: BodyInit
+  body?: BodyInit,
+  token?: string
 ): Promise<T> {
+  const headers = {
+    ...apiConfig.headers,
+    ...(token && { Authorization: `Bearer ${token}` }),
+  };
   const res = await fetch(`${apiConfig.baseUrl}${endpoint}`, {
     method,
-    headers: apiConfig.headers,
+    headers,
     body,
   });
   return checkResponse<T>(res);

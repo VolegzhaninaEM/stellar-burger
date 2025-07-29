@@ -50,7 +50,7 @@ export const App = (): JSX.Element => {
       buns._id,
     ];
     dispatch(createOrder(ids)).unwrap().catch(console.error);
-  }, [dispatch]);
+  }, [dispatch, buns, ingredients]);
 
   const closeModal = useCallback(() => {
     dispatch(clearIngredient());
@@ -79,10 +79,14 @@ export const App = (): JSX.Element => {
               />
             </main>
           </DndProvider>
-
-          {(item ?? orderNumber) && (
+          {item && (
             <Modal onClose={closeModal}>
-              {item ? <IngredientDetails card={item} /> : <OrderDetails />}
+              <IngredientDetails card={item} />
+            </Modal>
+          )}
+          {orderNumber !== null && (
+            <Modal onClose={closeModal}>
+              <OrderDetails />
             </Modal>
           )}
         </div>
