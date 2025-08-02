@@ -1,4 +1,4 @@
-import { CloseIcon } from '@ya.praktikum/react-developer-burger-ui-components';
+import { CloseIcon } from '@krgaa/react-developer-burger-ui-components';
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 

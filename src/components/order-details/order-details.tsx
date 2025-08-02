@@ -4,9 +4,9 @@ import type { JSX } from 'react';
 
 import styles from './order-details.module.css';
 
-const OrderDetails = (): JSX.Element => (
+const OrderDetails = ({ orderNumber }: { orderNumber: number }): JSX.Element => (
   <div className={`${styles.wrap} pt-30 pb-30`}>
-    <p className={`${styles.title} text text_type_digits-large mb-8`}>034536</p>
+    <p className={`${styles.title} text text_type_digits-large mb-8`}>{orderNumber}</p>
 
     <p className="text text_type_main-medium">идентификатор заказа</p>
 
