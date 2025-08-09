@@ -48,3 +48,9 @@ export type TApiError = {
 export type TConstructorIngredient = TIngredient & {
   uniqueId: string;
 };
+
+export type TPasswordReset = {
+  email?: string;
+  success: boolean;
+  message?: string;
+};
