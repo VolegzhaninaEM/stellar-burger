@@ -4,12 +4,12 @@ import {
   Input,
   PasswordInput,
 } from '@krgaa/react-developer-burger-ui-components';
-import { memo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { type FormEvent, type JSX, memo, useCallback, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 
+import { registerUser } from '../../services/authSlice';
+import { useAppDispatch } from '../../services/hooks.ts';
 import { ROUTES } from '@utils/constants.ts';
-
-import type { JSX } from 'react';
 
 import styles from './register-page.module.css';
 
@@ -17,11 +17,32 @@ export const RegisterPage = (): JSX.Element => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+
+  const handleRegister = useCallback(
+    async (event: FormEvent) => {
+      event.preventDefault();
+
+      try {
+        const data = await dispatch(registerUser({ email, password, name })).unwrap();
+        if (data) {
+          void navigate(ROUTES.HOME);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    [dispatch, email, password, name]
+  );
 
   return (
     <>
       <div className={`${styles.container}`}>
-        <form className={`${styles.form} mb-20`}>
+        <form
+          className={`${styles.form} mb-20`}
+          onSubmit={(e) => void handleRegister(e)}
+        >
           <legend className={`text text_type_main-medium p-8 ${styles.title}`}>
             Регистрация
           </legend>
@@ -52,7 +73,7 @@ export const RegisterPage = (): JSX.Element => {
           />
 
           <div className={`${styles.submitButton}`}>
-            <Button htmlType="button" type="primary" size="small">
+            <Button htmlType="submit" type="primary" size="small">
               <p className="text text_type_main-small"> Зарегистрироваться </p>
             </Button>
           </div>

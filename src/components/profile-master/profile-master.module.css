@@ -1,0 +1,14 @@
+.master__container,
+.nav__container {
+  display: flex;
+  flex-direction: column;
+}
+
+.link {
+  margin: 20px 0;
+  text-decoration: none;
+}
+
+.main_link {
+  color: #f2f2f3;
+}

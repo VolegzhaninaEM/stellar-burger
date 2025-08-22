@@ -3,44 +3,64 @@ import {
   EmailInput,
   PasswordInput,
 } from '@krgaa/react-developer-burger-ui-components';
-import { memo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { memo, useCallback, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 
-import { ROUTES } from '@utils/constants.ts';
+import { useAppDispatch } from '../../services//hooks';
+import { loginUser } from '../../services/authSlice';
+import { ROUTES } from '@utils/constants';
 
-import type { JSX } from 'react';
+import type { JSX, FormEvent } from 'react';
 
 import styles from './login-page.module.css';
 
 export const LoginPage = (): JSX.Element => {
-  const [value, setValue] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const navigate = useNavigate();
+  const dispatch = useAppDispatch();
+  const handleLogin = useCallback(
+    async (event: FormEvent) => {
+      event.preventDefault();
+
+      try {
+        const data = await dispatch(loginUser({ email, password })).unwrap();
+        if (data) {
+          void navigate(ROUTES.HOME);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    [dispatch, email, password]
+  );
 
   return (
     <>
       <div className={`${styles.container}`}>
-        <form className={`${styles.form} mb-20`}>
+        <form className={`${styles.form} mb-20`} onSubmit={(e) => void handleLogin(e)}>
           <legend className={`text text_type_main-medium p-8 ${styles.title}`}>
             Вход
           </legend>
           <EmailInput
             placeholder={'E-mail'}
-            onChange={(e) => setValue(e.target.value)}
-            value={value}
+            onChange={(e) => setEmail(e.target.value)}
+            value={email}
             name={'name'}
             size={'default'}
             extraClass="mb-6"
           />
           <PasswordInput
             placeholder={'Пароль'}
-            onChange={(e) => setValue(e.target.value)}
-            value={value}
+            onChange={(e) => setPassword(e.target.value)}
+            value={password}
             name={'name'}
             size={'default'}
             extraClass="mb-6"
           />
 
           <div className={`${styles.submitButton}`}>
-            <Button htmlType="button" type="primary" size="small">
+            <Button htmlType="submit" type="primary" size="small">
               <p className="text text_type_main-small"> Войти </p>
             </Button>
           </div>

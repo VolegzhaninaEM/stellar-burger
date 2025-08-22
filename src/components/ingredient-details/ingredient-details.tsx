@@ -9,7 +9,7 @@ type TIngredientDetailsProps = {
 
 const IngredientDetails = ({ card }: TIngredientDetailsProps): JSX.Element => (
   <div className="mb-15 mt-15 ml-10 mr-10">
-    <h1 className="text text_type_main-large">Детали ингредиента</h1>
+    <h1 className={`${styles.label} text text_type_main-large`}>Детали ингредиента</h1>
 
     <div className={styles.wrap}>
       <img className={`${styles.image} mb-4`} src={card.image} alt={card.name} />

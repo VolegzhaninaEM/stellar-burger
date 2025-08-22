@@ -24,7 +24,6 @@ const IngredientCard = ({
   index: number;
   moveIngredient: (from: number, to: number) => void;
 }): JSX.Element => {
-  console.log('IngredientCard index:', index, typeof index);
   const [, dropRef] = useDrop<TDragItem, void, void>({
     accept: 'ingredient-in-constructor',
     hover: (item) => {
@@ -44,32 +43,27 @@ const IngredientCard = ({
   });
 
   return (
-    <>
-      <div
-        className={`${ingredientCardStyles.card__wrap} mb-4`}
-        id="inner-wrap"
-        ref={(node) => {
-          dragRef(node);
-          dropRef(node);
-        }}
-        style={{ opacity }}
-      >
-        <div className={`${ingredientCardStyles.card__icon} mr-2`}>
-          <DragIcon type="primary" />
-        </div>
-        <div
-          className={`${ingredientCardStyles.card__center} mr-2`}
-          key={ingredient._id}
-        >
-          <ConstructorElement
-            text={ingredient.name}
-            price={ingredient.price}
-            thumbnail={ingredient.image}
-            handleClose={() => deleteElement(ingredient)}
-          />
-        </div>
+    <div
+      className={`${ingredientCardStyles.card__wrap} mb-4`}
+      id="inner-wrap"
+      ref={(node) => {
+        dragRef(node);
+        dropRef(node);
+      }}
+      style={{ opacity }}
+    >
+      <div className={`${ingredientCardStyles.card__icon} mr-2`}>
+        <DragIcon type="primary" />
       </div>
-    </>
+      <div className={`${ingredientCardStyles.card__center} mr-2`} key={ingredient._id}>
+        <ConstructorElement
+          text={ingredient.name}
+          price={ingredient.price}
+          thumbnail={ingredient.image}
+          handleClose={() => deleteElement(ingredient)}
+        />
+      </div>
+    </div>
   );
 };
 

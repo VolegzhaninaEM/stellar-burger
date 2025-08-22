@@ -1,6 +1,7 @@
 import { memo, useCallback, useEffect } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import { useAppDispatch, useAppSelector } from '../../services/hooks.ts';
 import {
@@ -11,7 +12,6 @@ import { fetchIngredients } from '../../services/ingredientsSlice.ts';
 import { closeOrderModal, createOrder } from '../../services/orderSlice.ts';
 import { BurgerConstructor } from '@components/burger-contructor/burger-constructor';
 import BurgerIngredients from '@components/burger-ingredients/burger-ingredients.tsx';
-import IngredientDetails from '@components/ingredient-details/ingredient-details.tsx';
 import { Modal } from '@components/modal/modal.tsx';
 import OrderDetails from '@components/order-details/order-details.tsx';
 
@@ -23,9 +23,10 @@ import styles from './home-page.module.css';
 
 export const HomePage = (): JSX.Element => {
   const dispatch: AppDispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const loading = useAppSelector((s) => s.ingredients.status === 'loading');
-  const item = useAppSelector((s) => s.ingredientDetails);
   const orderNumber = useAppSelector((s) => s.order.number);
 
   useEffect(() => {
@@ -35,6 +36,9 @@ export const HomePage = (): JSX.Element => {
   const handleIngredientClick = useCallback(
     (ingredientItem: TIngredient) => {
       dispatch(setIngredient(ingredientItem));
+      void navigate(`/ingredients/${ingredientItem._id}`, {
+        state: { background: location },
+      });
     },
     [dispatch]
   );
@@ -75,11 +79,6 @@ export const HomePage = (): JSX.Element => {
               />
             </main>
           </DndProvider>
-          {item && (
-            <Modal onClose={closeModal}>
-              <IngredientDetails card={item} />
-            </Modal>
-          )}
           {orderNumber !== null && (
             <Modal onClose={closeModal}>
               <OrderDetails orderNumber={orderNumber} />

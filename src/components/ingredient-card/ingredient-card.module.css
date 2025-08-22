@@ -8,6 +8,11 @@
   align-items: center;
 }
 
+.clickable {
+  cursor: pointer;
+  pointer-events: auto;
+}
+
 .card__icon:hover {
   cursor: pointer;
   opacity: 0.8;
