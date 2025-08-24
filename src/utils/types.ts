@@ -84,4 +84,5 @@ export type TAuthState = {
   refreshToken: string | null;
   loading: boolean;
   error: string | null;
+  authChecked: boolean;
 };

@@ -1,4 +1,4 @@
-import { memo, useCallback, useEffect } from 'react';
+import { memo, useCallback } from 'react';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -8,12 +8,12 @@ import {
   clearIngredient,
   setIngredient,
 } from '../../services/ingredientDetailsSlice.ts';
-import { fetchIngredients } from '../../services/ingredientsSlice.ts';
 import { closeOrderModal, createOrder } from '../../services/orderSlice.ts';
 import { BurgerConstructor } from '@components/burger-contructor/burger-constructor';
 import BurgerIngredients from '@components/burger-ingredients/burger-ingredients.tsx';
 import { Modal } from '@components/modal/modal.tsx';
 import OrderDetails from '@components/order-details/order-details.tsx';
+import { ROUTES } from '@utils/constants.ts';
 
 import type { AppDispatch } from '@services/store.ts';
 import type { TIngredient } from '@utils/types.ts';
@@ -25,13 +25,10 @@ export const HomePage = (): JSX.Element => {
   const dispatch: AppDispatch = useAppDispatch();
   const navigate = useNavigate();
   const location = useLocation();
+  const isAuth = useAppSelector((s) => s.auth.accessToken);
 
   const loading = useAppSelector((s) => s.ingredients.status === 'loading');
   const orderNumber = useAppSelector((s) => s.order.number);
-
-  useEffect(() => {
-    void dispatch(fetchIngredients());
-  }, [dispatch]);
 
   const handleIngredientClick = useCallback(
     (ingredientItem: TIngredient) => {
@@ -40,10 +37,14 @@ export const HomePage = (): JSX.Element => {
         state: { background: location },
       });
     },
-    [dispatch]
+    [dispatch, location]
   );
   const { buns, ingredients } = useAppSelector((s) => s.burgerConstructor);
   const handleOrderButtonClick = useCallback(() => {
+    if (!isAuth) {
+      void navigate(ROUTES.LOGIN, { state: { from: '/' } });
+      return;
+    }
     if (!buns) return;
     const ids: string[] = [
       buns._id,
@@ -76,6 +77,7 @@ export const HomePage = (): JSX.Element => {
               <BurgerConstructor
                 handleOrderButtonClick={handleOrderButtonClick}
                 extendedClass={styles.scroll}
+                caption={isAuth ? 'Оформить заказ' : 'Войти и оформить'}
               />
             </main>
           </DndProvider>

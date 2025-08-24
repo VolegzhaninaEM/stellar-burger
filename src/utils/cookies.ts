@@ -1,3 +1,5 @@
+import type { TAuthResponse } from '@utils/types.ts';
+
 type CookieName = string;
 type CookieValue = string;
 
@@ -47,3 +49,18 @@ export function setCookie(
 export function deleteCookie(name: CookieName): void {
   setCookie(name, '', { expires: new Date(0) });
 }
+
+export const saveTokens = ({ accessToken, refreshToken }: TAuthResponse): void => {
+  setCookie('accessToken', accessToken.split('Bearer ')[1]);
+  setCookie('refreshToken', refreshToken);
+};
+
+export const getTokens = (): {
+  accessToken: string | undefined;
+  refreshToken: string | undefined;
+} => {
+  return {
+    accessToken: getCookie('accessToken'),
+    refreshToken: getCookie('refreshToken'),
+  };
+};

@@ -36,52 +36,50 @@ export const LoginPage = (): JSX.Element => {
   );
 
   return (
-    <>
-      <div className={`${styles.container}`}>
-        <form className={`${styles.form} mb-20`} onSubmit={(e) => void handleLogin(e)}>
-          <legend className={`text text_type_main-medium p-8 ${styles.title}`}>
-            Вход
-          </legend>
-          <EmailInput
-            placeholder={'E-mail'}
-            onChange={(e) => setEmail(e.target.value)}
-            value={email}
-            name={'name'}
-            size={'default'}
-            extraClass="mb-6"
-          />
-          <PasswordInput
-            placeholder={'Пароль'}
-            onChange={(e) => setPassword(e.target.value)}
-            value={password}
-            name={'name'}
-            size={'default'}
-            extraClass="mb-6"
-          />
+    <div className={`${styles.container}`}>
+      <form className={`${styles.form} mb-20`} onSubmit={(e) => void handleLogin(e)}>
+        <legend className={`text text_type_main-medium p-8 ${styles.title}`}>
+          Вход
+        </legend>
+        <EmailInput
+          placeholder={'E-mail'}
+          onChange={(e) => setEmail(e.target.value)}
+          value={email}
+          name={'name'}
+          size={'default'}
+          extraClass="mb-6"
+        />
+        <PasswordInput
+          placeholder={'Пароль'}
+          onChange={(e) => setPassword(e.target.value)}
+          value={password}
+          name={'name'}
+          size={'default'}
+          extraClass="mb-6"
+        />
 
-          <div className={`${styles.submitButton}`}>
-            <Button htmlType="submit" type="primary" size="small">
-              <p className="text text_type_main-small"> Войти </p>
-            </Button>
-          </div>
-        </form>
-
-        <div>
-          <p className="text text_type_main-small">
-            Вы новый пользователь?{' '}
-            <Link className={`${styles.link}`} to={ROUTES.REGISTER}>
-              Зарегистрироваться
-            </Link>
-          </p>
-          <p className="text text_type_main-small">
-            Забыли пароль?{' '}
-            <Link className={`${styles.link}`} to={ROUTES.FORGOT_PASSWORD}>
-              Восстановите пароль
-            </Link>
-          </p>
+        <div className={`${styles.submitButton}`}>
+          <Button htmlType="submit" type="primary" size="small">
+            <p className="text text_type_main-small"> Войти </p>
+          </Button>
         </div>
+      </form>
+
+      <div>
+        <p className="text text_type_main-small">
+          Вы новый пользователь?{' '}
+          <Link className={`${styles.link}`} to={ROUTES.REGISTER}>
+            Зарегистрироваться
+          </Link>
+        </p>
+        <p className="text text_type_main-small">
+          Забыли пароль?{' '}
+          <Link className={`${styles.link}`} to={ROUTES.FORGOT_PASSWORD}>
+            Восстановите пароль
+          </Link>
+        </p>
       </div>
-    </>
+    </div>
   );
 };
 

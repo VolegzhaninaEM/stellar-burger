@@ -6,10 +6,12 @@ import {
   RegisterPage,
   ResetPassword,
 } from '@/pages';
-import { memo } from 'react';
+import { memo, useEffect } from 'react';
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 
-import { useAppSelector } from '../../services/hooks';
+import { fetchUser, refreshToken } from '../../services/authSlice.ts';
+import { useAppDispatch, useAppSelector } from '../../services/hooks';
+import { fetchIngredients } from '../../services/ingredientsSlice.ts';
 import { AppHeader } from '@components/app-header/app-header.tsx';
 import IngredientDetails from '@components/ingredient-details/ingredient-details.tsx';
 import { Modal } from '@components/modal/modal.tsx';
@@ -18,6 +20,7 @@ import { ProfileUpdateForm } from '@components/profile-update-form/profile-updat
 import { ProtectedRouteElement } from '@components/protected-route-element/protected-route-element.tsx';
 import IngredientPage from '@pages/ingredient-page/ingredient-page.tsx';
 import { ROUTES } from '@utils/constants.ts';
+import { getCookie } from '@utils/cookies.ts';
 
 import type { RootState } from '@services/store.ts';
 import type { JSX } from 'react';
@@ -29,10 +32,47 @@ export const App = (): JSX.Element => {
   const location = useLocation();
   const state = location.state as TLocationState;
   const background = state?.background ?? location;
-  const isModal = Boolean(state?.background);
-  const isAuth = useAppSelector((state: RootState) => state.auth.accessToken);
+  const isAuth = useAppSelector((s: RootState) => s.auth.accessToken);
+  const authChecked = useAppSelector((s: RootState) => s.auth.authChecked);
   const from: string = (location.state as { from?: string })?.from ?? ROUTES.HOME;
   const item = useAppSelector((s) => s.ingredientDetails)!;
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    const fetchData = async (): Promise<void> => {
+      const accessToken = getCookie('accessToken');
+      if (accessToken) {
+        await dispatch(fetchUser());
+      }
+      await dispatch(fetchIngredients());
+    };
+
+    try {
+      void fetchData();
+    } catch (error) {
+      console.error(error);
+    }
+  }, [dispatch]);
+
+  useEffect(() => {
+    const fetchData = async (): Promise<void> => {
+      const hasRefreshToken = localStorage.getItem('refreshToken');
+      if (!isAuth && hasRefreshToken) {
+        await dispatch(refreshToken());
+      }
+    };
+
+    try {
+      void fetchData();
+    } catch (error) {
+      console.error(error);
+    }
+  }, [dispatch, isAuth]);
+
+  if (!authChecked) {
+    return <div>Загрузка...</div>; // 🔁 Показываем спиннер, пока не знаем статус
+  }
+
   return (
     <>
       <AppHeader isAuth={!!isAuth} />
@@ -62,7 +102,7 @@ export const App = (): JSX.Element => {
         />
       </Routes>
 
-      {isModal && (
+      {state?.background && (
         <Routes>
           <Route
             path="/ingredients/:id"

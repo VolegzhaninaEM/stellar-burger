@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
 import { request } from '@utils/api';
-import { getCookie } from '@utils/cookies.ts';
+import { getCookie, setCookie } from '@utils/cookies.ts';
 
 import type {
   TAuthResponse,
@@ -12,25 +12,76 @@ import type {
 
 export type IUserData = Record<string, string | number | FormData | string[]>;
 
-export const fetchUser = createAsyncThunk('auth/getUser', async () => {
-  const token = getCookie('accessToken');
-  if (!token) throw new Error('Access token is missing');
+export const fetchUser = createAsyncThunk(
+  'auth/getUser',
+  async (_, { dispatch, rejectWithValue }) => {
+    const token = getCookie('accessToken');
+    if (!token) {
+      return rejectWithValue('Access token is missing');
+    }
 
-  return await request<TAuthResponse>('/auth/user', 'GET', undefined, token);
-});
+    try {
+      const response = await request<TAuthResponse>(
+        '/auth/user',
+        'GET',
+        undefined,
+        token
+      );
+      return response;
+    } catch (error: unknown) {
+      const getErrorMessage = (err: unknown): string => {
+        if (err && typeof err === 'object' && 'message' in err) {
+          return (err as { message?: string }).message ?? '';
+        }
+        return String(err);
+      };
+
+      const message = getErrorMessage(error);
+
+      if (message.includes('401') || message.includes('jwt expired')) {
+        console.log('🔁 Access token expired, refreshing...');
+
+        try {
+          await dispatch(refreshToken()).unwrap();
+
+          const newToken = getCookie('accessToken');
+          if (!newToken) {
+            return rejectWithValue('No new access token after refresh');
+          }
+
+          const response = await request<TAuthResponse>(
+            '/auth/user',
+            'GET',
+            undefined,
+            newToken
+          );
+          return response;
+        } catch (_refreshError) {
+          await dispatch(logoutUser());
+          return rejectWithValue('Refresh failed');
+        }
+      }
+
+      return rejectWithValue(message || 'Failed to fetch user');
+    }
+  }
+);
 
 export const updateUser = createAsyncThunk(
   'auth/updateUser',
   async (data: IUserData) => {
     const token = getCookie('accessToken');
     if (!token) throw new Error('Access token is missing');
-
-    return await request<TAuthResponse>(
+    const response = await request<TAuthResponse>(
       '/auth/user',
       'PATCH',
       JSON.stringify(data),
       token
     );
+    setCookie('accessToken', response.accessToken);
+    setCookie('refreshToken', response.refreshToken);
+
+    return response;
   }
 );
 export const loginUser = createAsyncThunk(
@@ -41,6 +92,8 @@ export const loginUser = createAsyncThunk(
       'POST',
       JSON.stringify({ email, password })
     );
+    setCookie('accessToken', response.accessToken);
+    setCookie('refreshToken', response.refreshToken);
     return response;
   }
 );
@@ -74,14 +127,33 @@ export const registerUser = createAsyncThunk(
   }
 );
 
-export const refreshToken = createAsyncThunk('auth/token', async () => {
-  const response = await request<TTokenResponse>(
-    'auth/token',
-    'POST',
-    JSON.stringify({ token: localStorage.getItem('refreshToken') })
-  );
-  return response;
-});
+export const refreshToken = createAsyncThunk(
+  '/auth/token',
+  async (_, { dispatch, rejectWithValue }) => {
+    try {
+      const response = await request<TTokenResponse>(
+        '/auth/token',
+        'POST',
+        JSON.stringify({ token: localStorage.getItem('refreshToken') })
+      );
+      const cleanAccessToken = response.accessToken.replace(/^Bearer\s+/i, '').trim();
+      const cleanRefreshToken = response.refreshToken;
+
+      setCookie('accessToken', cleanAccessToken);
+      setCookie('refreshToken', cleanRefreshToken);
+      localStorage.setItem('refreshToken', cleanRefreshToken);
+
+      await dispatch(fetchUser()).unwrap();
+      return {
+        accessToken: cleanAccessToken,
+        refreshToken: cleanRefreshToken,
+      };
+    } catch (_error) {
+      await dispatch(logoutUser());
+      return rejectWithValue('Refresh failed');
+    }
+  }
+);
 
 const initialState: TAuthState = {
   user: null,
@@ -89,6 +161,7 @@ const initialState: TAuthState = {
   refreshToken: null,
   loading: false,
   error: null,
+  authChecked: false,
 };
 
 const authSlice = createSlice({
@@ -155,6 +228,7 @@ const authSlice = createSlice({
         state.loading = true;
       })
       .addCase(logoutUser.fulfilled, (state) => {
+        state.authChecked = true;
         state.user = null;
         state.accessToken = null;
         state.refreshToken = null;
@@ -165,11 +239,13 @@ const authSlice = createSlice({
         state.error = error.message ?? 'Ошибка';
       })
       .addCase(refreshToken.fulfilled, (state, { payload }) => {
+        state.authChecked = true;
         state.accessToken = payload.accessToken;
         state.refreshToken = payload.refreshToken;
         localStorage.setItem('refreshToken', payload.refreshToken);
       })
       .addCase(refreshToken.rejected, (state, { error }) => {
+        state.authChecked = true;
         state.error = error.message ?? 'Не удалось обновить токен';
       }),
 });

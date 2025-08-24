@@ -9,11 +9,13 @@ import styles from './burger-constructor.module.css';
 type TBurgerConstructorProps = {
   handleOrderButtonClick: () => void;
   extendedClass?: string;
+  caption: string;
 };
 
 export const BurgerConstructor = ({
   handleOrderButtonClick,
   extendedClass,
+  caption,
 }: TBurgerConstructorProps): JSX.Element => {
   const { ingredients, buns } = useAppSelector((s) => s.burgerConstructor);
 
@@ -25,6 +27,7 @@ export const BurgerConstructor = ({
           ingredients={ingredients}
           buns={buns}
           handleOrderButtonClick={handleOrderButtonClick}
+          caption={caption}
         />
       ) : (
         <p className={`text text_type_main-default text_color_inactive`}>

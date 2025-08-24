@@ -51,7 +51,7 @@ export const AppHeader = (props: { isAuth: boolean | null }): JSX.Element => {
           <Logo />
         </div>
         <NavLink
-          to={props.isAuth ? ROUTES.PROFILE : ROUTES.REGISTER}
+          to={props.isAuth ? ROUTES.PROFILE : ROUTES.LOGIN}
           className={({ isActive }) =>
             isActive ? `${activeLink} ${linkLast}` : `${styles.link}`
           }
