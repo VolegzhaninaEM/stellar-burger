@@ -17,16 +17,15 @@ import IngredientDetails from '@components/ingredient-details/ingredient-details
 import { Modal } from '@components/modal/modal.tsx';
 import { ProfileOrders } from '@components/profile-orders/profile-orders.tsx';
 import { ProfileUpdateForm } from '@components/profile-update-form/profile-update-form.tsx';
+import { ProtectedResetRoute } from '@components/protected-reset-route/protected-reset-route.tsx';
 import { ProtectedRouteElement } from '@components/protected-route-element/protected-route-element.tsx';
 import IngredientPage from '@pages/ingredient-page/ingredient-page.tsx';
 import { ROUTES } from '@utils/constants.ts';
 import { getCookie } from '@utils/cookies.ts';
 
 import type { RootState } from '@services/store.ts';
+import type { TLocationState } from '@utils/types.ts';
 import type { JSX } from 'react';
-type TLocationState = {
-  background?: Location;
-};
 
 export const App = (): JSX.Element => {
   const location = useLocation();
@@ -35,7 +34,10 @@ export const App = (): JSX.Element => {
   const isAuth = useAppSelector((s: RootState) => s.auth.accessToken);
   const authChecked = useAppSelector((s: RootState) => s.auth.authChecked);
   const from: string = (location.state as { from?: string })?.from ?? ROUTES.HOME;
-  const item = useAppSelector((s) => s.ingredientDetails)!;
+  const ingredients = useAppSelector((s) => s.ingredients.items);
+  const ingredient = ingredients.find(
+    (i) => i._id === location.pathname.split('/').pop()
+  );
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -98,7 +100,11 @@ export const App = (): JSX.Element => {
         <Route path={ROUTES.REGISTER} element={<RegisterPage />} />
         <Route
           path={ROUTES.RESET_PASSWORD}
-          element={!isAuth ? <ResetPassword /> : <Navigate to={from} />}
+          element={
+            <ProtectedResetRoute
+              element={!isAuth ? <ResetPassword /> : <Navigate to={ROUTES.HOME} />}
+            />
+          }
         />
       </Routes>
 
@@ -108,7 +114,7 @@ export const App = (): JSX.Element => {
             path="/ingredients/:id"
             element={
               <Modal onClose={() => window.history.back()}>
-                <IngredientDetails card={item} />
+                <IngredientDetails card={ingredient} />
               </Modal>
             }
           />

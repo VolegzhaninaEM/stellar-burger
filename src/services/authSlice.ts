@@ -39,8 +39,6 @@ export const fetchUser = createAsyncThunk(
       const message = getErrorMessage(error);
 
       if (message.includes('401') || message.includes('jwt expired')) {
-        console.log('🔁 Access token expired, refreshing...');
-
         try {
           await dispatch(refreshToken()).unwrap();
 
@@ -131,6 +129,8 @@ export const refreshToken = createAsyncThunk(
   '/auth/token',
   async (_, { dispatch, rejectWithValue }) => {
     try {
+      const refreshToken = getCookie('refreshToken');
+      if (!refreshToken) return rejectWithValue('no refresh token');
       const response = await request<TTokenResponse>(
         '/auth/token',
         'POST',
@@ -177,9 +177,11 @@ const authSlice = createSlice({
       .addCase(fetchUser.fulfilled, (s, { payload }) => {
         s.loading = false;
         s.user = payload.user;
+        s.authChecked = true;
       })
       .addCase(fetchUser.rejected, (s, { error }) => {
         s.loading = false;
+        s.authChecked = true;
         s.error = error.message ?? 'Не удалось загрузить профиль';
       })
       .addCase(updateUser.pending, (s) => {

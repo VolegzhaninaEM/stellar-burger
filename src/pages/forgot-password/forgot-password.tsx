@@ -16,7 +16,9 @@ export const ForgotPassword = (): JSX.Element => {
   const resetPasswordHandler = useCallback(async () => {
     const response = await forgotPassword(email);
     if (response.success) {
-      return navigate(ROUTES.RESET_PASSWORD);
+      return navigate(ROUTES.RESET_PASSWORD, {
+        state: { from: ROUTES.FORGOT_PASSWORD },
+      });
     }
   }, [email]);
 

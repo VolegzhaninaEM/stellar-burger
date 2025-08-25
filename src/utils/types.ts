@@ -86,3 +86,8 @@ export type TAuthState = {
   error: string | null;
   authChecked: boolean;
 };
+
+export type TLocationState = {
+  background?: Location;
+  from?: string;
+};

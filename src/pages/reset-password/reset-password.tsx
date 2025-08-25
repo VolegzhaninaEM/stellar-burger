@@ -21,7 +21,7 @@ export const ResetPassword = (): JSX.Element => {
   const saveNewPassword = useCallback(async (): Promise<void> => {
     const response = await resetPassword(newPassword, value);
     if (response.success) {
-      await navigate(ROUTES.LOGIN);
+      await navigate(ROUTES.LOGIN, { state: { from: ROUTES.FORGOT_PASSWORD } });
     }
   }, [newPassword, value]);
 
