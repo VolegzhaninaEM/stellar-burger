@@ -8,11 +8,15 @@ import { NavLink } from 'react-router-dom';
 
 import { ROUTES } from '@utils/constants.ts';
 
-import type { JSX } from 'react';
+import type { FC, JSX } from 'react';
 
 import styles from './app-header.module.css';
 
-export const AppHeader = (props: { isAuth: boolean | null }): JSX.Element => {
+type TAppHeaderProps = {
+  isAuth: boolean | null;
+};
+
+export const AppHeader: FC<TAppHeaderProps> = ({ isAuth }): JSX.Element => {
   const activeLink = `${styles.link} ${styles.link_active}`;
   const pendingText = 'text text_type_main-default text_color_inactive ml-2';
   const activeText = 'text text_type_main-default ml-2';
@@ -51,7 +55,7 @@ export const AppHeader = (props: { isAuth: boolean | null }): JSX.Element => {
           <Logo />
         </div>
         <NavLink
-          to={props.isAuth ? ROUTES.PROFILE : ROUTES.LOGIN}
+          to={isAuth ? ROUTES.PROFILE : ROUTES.LOGIN}
           className={({ isActive }) =>
             isActive ? `${activeLink} ${linkLast}` : `${styles.link}`
           }

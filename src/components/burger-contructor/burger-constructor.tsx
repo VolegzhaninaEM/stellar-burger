@@ -2,7 +2,7 @@ import { useAppSelector } from '../../services/hooks.ts';
 import FinalPrice from '@components/final-price/final-price.tsx';
 import IngredientCards from '@components/ingredient-cards/ingredient-cards.tsx';
 
-import type { JSX } from 'react';
+import type { FC, JSX } from 'react';
 
 import styles from './burger-constructor.module.css';
 
@@ -12,11 +12,11 @@ type TBurgerConstructorProps = {
   caption: string;
 };
 
-export const BurgerConstructor = ({
+export const BurgerConstructor: FC<TBurgerConstructorProps> = ({
   handleOrderButtonClick,
   extendedClass,
   caption,
-}: TBurgerConstructorProps): JSX.Element => {
+}): JSX.Element => {
   const { ingredients, buns } = useAppSelector((s) => s.burgerConstructor);
 
   return (

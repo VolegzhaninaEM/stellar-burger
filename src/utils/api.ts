@@ -1,12 +1,12 @@
-type ApiSuccess<T> = {
+type ApiSuccess<T> = Readonly<{
   success: true;
   data: T;
-};
+}>;
 
-type ApiError = {
+type ApiError = Readonly<{
   success: false;
   message?: string;
-};
+}>;
 
 export type ApiResponse<T> = ApiSuccess<T> | ApiError;
 

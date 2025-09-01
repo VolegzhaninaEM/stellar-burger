@@ -6,14 +6,14 @@ import SwitchTabs from '@components/switch-tabs/switch-tabs.tsx';
 import { ingredientTypes } from '@utils/constants.ts';
 
 import type { TBurgerIngredientsProps } from '@utils/types.ts';
-import type { JSX } from 'react';
+import type { JSX, FC } from 'react';
 
 import styles from './burger-ingredients.module.css';
 
-const BurgerIngredients = ({
+const BurgerIngredients: FC<TBurgerIngredientsProps> = ({
   handleIngredientClick,
   extendedClass,
-}: TBurgerIngredientsProps): JSX.Element => {
+}): JSX.Element => {
   const ingredients = useAppSelector((s) => s.ingredients.items);
   const [activeTab, setActiveTab] = useState(ingredientTypes[0].type);
   const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({});

@@ -4,7 +4,7 @@ import { createPortal } from 'react-dom';
 
 import ModalOverlay from '../modal-overlay/modal-overlay';
 
-import type { JSX, ReactNode } from 'react';
+import type { JSX, ReactNode, FC } from 'react';
 
 import modalStyles from './modal.module.css';
 
@@ -13,7 +13,10 @@ type TModalProps = {
   children: ReactNode;
 };
 
-export const Modal = ({ onClose, children }: TModalProps): JSX.Element | null => {
+export const Modal: FC<TModalProps> = ({
+  onClose,
+  children,
+}: TModalProps): JSX.Element | null => {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {

@@ -9,7 +9,7 @@ import {
 import { memo, useEffect } from 'react';
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 
-import { fetchUser, refreshToken } from '../../services/authSlice.ts';
+import { fetchUser, refreshToken, setAuthChecked } from '../../services/authSlice.ts';
 import { useAppDispatch, useAppSelector } from '../../services/hooks';
 import { fetchIngredients } from '../../services/ingredientsSlice.ts';
 import { AppHeader } from '@components/app-header/app-header.tsx';
@@ -24,7 +24,7 @@ import { ROUTES } from '@utils/constants.ts';
 import { getCookie } from '@utils/cookies.ts';
 
 import type { RootState } from '@services/store.ts';
-import type { TLocationState } from '@utils/types.ts';
+import type { TIngredient, TLocationState } from '@utils/types.ts';
 import type { JSX } from 'react';
 
 export const App = (): JSX.Element => {
@@ -34,8 +34,8 @@ export const App = (): JSX.Element => {
   const isAuth = useAppSelector((s: RootState) => s.auth.accessToken);
   const authChecked = useAppSelector((s: RootState) => s.auth.authChecked);
   const from: string = (location.state as { from?: string })?.from ?? ROUTES.HOME;
-  const ingredients = useAppSelector((s) => s.ingredients.items);
-  const ingredient = ingredients.find(
+  const ingredients: TIngredient[] = useAppSelector((s) => s.ingredients.items);
+  const ingredient: TIngredient | undefined = ingredients.find(
     (i) => i._id === location.pathname.split('/').pop()
   );
   const dispatch = useAppDispatch();
@@ -57,19 +57,25 @@ export const App = (): JSX.Element => {
   }, [dispatch]);
 
   useEffect(() => {
-    const fetchData = async (): Promise<void> => {
+    const checkAuth = async (): Promise<void> => {
+      const accessToken = getCookie('accessToken');
       const hasRefreshToken = localStorage.getItem('refreshToken');
-      if (!isAuth && hasRefreshToken) {
-        await dispatch(refreshToken());
+
+      try {
+        if (accessToken) {
+          await dispatch(fetchUser());
+        } else if (hasRefreshToken) {
+          await dispatch(refreshToken());
+        }
+      } catch {
+        throw new Error('Проверка пользователя прошла с ошибкой');
+      } finally {
+        dispatch(setAuthChecked(true));
       }
     };
 
-    try {
-      void fetchData();
-    } catch (error) {
-      console.error(error);
-    }
-  }, [dispatch, isAuth]);
+    void checkAuth();
+  }, [dispatch]);
 
   if (!authChecked) {
     return <div>Загрузка...</div>; // 🔁 Показываем спиннер, пока не знаем статус

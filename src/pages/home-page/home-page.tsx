@@ -26,8 +26,6 @@ export const HomePage = (): JSX.Element => {
   const navigate = useNavigate();
   const location = useLocation();
   const isAuth = useAppSelector((s) => s.auth.accessToken);
-
-  const loading = useAppSelector((s) => s.ingredients.status === 'loading');
   const orderNumber = useAppSelector((s) => s.order.number);
 
   const handleIngredientClick = useCallback(
@@ -61,33 +59,29 @@ export const HomePage = (): JSX.Element => {
 
   return (
     <>
-      {loading ? (
-        <p>Загрузка…</p>
-      ) : (
-        <div className={styles.app} id="app">
-          <h1 className={`${styles.title} text text_type_main-large mt-10 mb-5 pl-5`}>
-            Соберите бургер
-          </h1>
-          <DndProvider backend={HTML5Backend}>
-            <main className={`${styles.main} pl-5 pr-5`}>
-              <BurgerIngredients
-                handleIngredientClick={handleIngredientClick}
-                extendedClass={styles.scroll}
-              />
-              <BurgerConstructor
-                handleOrderButtonClick={handleOrderButtonClick}
-                extendedClass={styles.scroll}
-                caption={isAuth ? 'Оформить заказ' : 'Войти и оформить'}
-              />
-            </main>
-          </DndProvider>
-          {orderNumber !== null && (
-            <Modal onClose={closeModal}>
-              <OrderDetails orderNumber={orderNumber} />
-            </Modal>
-          )}
-        </div>
-      )}
+      <div className={styles.app} id="app">
+        <h1 className={`${styles.title} text text_type_main-large mt-10 mb-5 pl-5`}>
+          Соберите бургер
+        </h1>
+        <DndProvider backend={HTML5Backend}>
+          <main className={`${styles.main} pl-5 pr-5`}>
+            <BurgerIngredients
+              handleIngredientClick={handleIngredientClick}
+              extendedClass={styles.scroll}
+            />
+            <BurgerConstructor
+              handleOrderButtonClick={handleOrderButtonClick}
+              extendedClass={styles.scroll}
+              caption={isAuth ? 'Оформить заказ' : 'Войти и оформить'}
+            />
+          </main>
+        </DndProvider>
+        {orderNumber !== null && (
+          <Modal onClose={closeModal}>
+            <OrderDetails orderNumber={orderNumber} />
+          </Modal>
+        )}
+      </div>
     </>
   );
 };

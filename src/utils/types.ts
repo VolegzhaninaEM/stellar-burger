@@ -41,10 +41,6 @@ export type TIngredientType = {
   text: string;
 };
 
-export type TApiError = {
-  message?: string;
-};
-
 export type TConstructorIngredient = TIngredient & {
   uniqueId: string;
 };
@@ -60,24 +56,20 @@ export type TUser = {
   name: string;
 };
 
-export type TAuthResponse = {
-  success: boolean;
-  user: TUser;
-  accessToken: string;
-  refreshToken: string;
-};
-
-export type TLogoutResponse = {
-  success: boolean;
-  message: string;
-};
-
 export type TTokenResponse = {
   success: boolean;
   accessToken: string;
   refreshToken: string;
 };
 
+export type TAuthResponse = TTokenResponse & {
+  user: TUser;
+};
+
+export type TLogoutResponse = {
+  success: boolean;
+  message: string;
+};
 export type TAuthState = {
   user: TUser | null;
   accessToken: string | null;
@@ -90,4 +82,21 @@ export type TAuthState = {
 export type TLocationState = {
   background?: Location;
   from?: string;
+};
+
+export type TDragItem = {
+  index: number;
+  id: string;
+  type: string;
+};
+
+export type TDroppedItem = {
+  ingredient: TConstructorIngredient;
+};
+
+export type TIngredientCardProps = {
+  ingredient: TConstructorIngredient;
+  deleteElement: (ingredient: TConstructorIngredient) => void;
+  index: number;
+  moveIngredient: (from: number, to: number) => void;
 };

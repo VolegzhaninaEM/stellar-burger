@@ -2,29 +2,29 @@ import {
   ConstructorElement,
   DragIcon,
 } from '@krgaa/react-developer-burger-ui-components';
+import { useRef, useEffect } from 'react';
 import { useDrag, useDrop } from 'react-dnd';
 
-import type { TConstructorIngredient } from '@utils/types.ts';
-import type { JSX } from 'react';
+import type { TDragItem, TIngredientCardProps } from '@utils/types.ts';
+import type { FC } from 'react';
 
-import ingredientCardStyles from './ingredient-card.module.css';
-type TDragItem = {
-  index: number;
-  id: string;
-  type: 'ingredient';
-};
-const IngredientCard = ({
+const IngredientCard: FC<TIngredientCardProps> = ({
   ingredient,
-  deleteElement,
   index,
+  deleteElement,
   moveIngredient,
-}: {
-  ingredient: TConstructorIngredient;
-  deleteElement: (ingredient: TConstructorIngredient) => void;
-  index: number;
-  moveIngredient: (from: number, to: number) => void;
-}): JSX.Element => {
-  const [, dropRef] = useDrop<TDragItem, void, void>({
+}) => {
+  const ref = useRef<HTMLDivElement>(null);
+
+  const [{ opacity }, drag] = useDrag<TDragItem, unknown, { opacity: number }>({
+    type: 'ingredient-in-constructor',
+    item: { index, id: ingredient._id, type: 'ingredient' },
+    collect: (monitor) => ({
+      opacity: monitor.isDragging() ? 0.5 : 1,
+    }),
+  });
+
+  const [, drop] = useDrop<TDragItem, unknown, unknown>({
     accept: 'ingredient-in-constructor',
     hover: (item) => {
       if (item.index !== index) {
@@ -34,35 +34,22 @@ const IngredientCard = ({
     },
   });
 
-  const [{ opacity }, dragRef] = useDrag({
-    type: 'ingredient-in-constructor',
-    item: { index },
-    collect: (monitor) => ({
-      opacity: monitor.isDragging() ? 0.5 : 1,
-    }),
-  });
+  // Правильное «сцепление» коллбэков react-dnd
+  useEffect(() => {
+    if (ref.current) {
+      drag(drop(ref.current));
+    }
+  }, [drag, drop]);
 
   return (
-    <div
-      className={`${ingredientCardStyles.card__wrap} mb-4`}
-      id="inner-wrap"
-      ref={(node) => {
-        dragRef(node);
-        dropRef(node);
-      }}
-      style={{ opacity }}
-    >
-      <div className={`${ingredientCardStyles.card__icon} mr-2`}>
-        <DragIcon type="primary" />
-      </div>
-      <div className={`${ingredientCardStyles.card__center} mr-2`} key={ingredient._id}>
-        <ConstructorElement
-          text={ingredient.name}
-          price={ingredient.price}
-          thumbnail={ingredient.image}
-          handleClose={() => deleteElement(ingredient)}
-        />
-      </div>
+    <div ref={ref} style={{ opacity }} className="mb-4">
+      <DragIcon type="primary" />
+      <ConstructorElement
+        text={ingredient.name}
+        price={ingredient.price}
+        thumbnail={ingredient.image}
+        handleClose={() => deleteElement(ingredient)}
+      />
     </div>
   );
 };
