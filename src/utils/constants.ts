@@ -7,7 +7,18 @@ export const ingredientTypes = [
 export const apiConfig = {
   baseUrl: 'https://norma.nomoreparties.space/api',
   headers: {
-    authorization: '',
     'Content-Type': 'application/json',
   },
 };
+
+export enum ROUTES {
+  HOME = '/',
+  LOGIN = '/login',
+  REGISTER = '/register',
+  FORGOT_PASSWORD = '/forgot-password',
+  RESET_PASSWORD = '/reset-password',
+  PROFILE = '/profile',
+  PROFILE_ORDERS = '/profile/orders',
+  PROFILE_ORDER = '/profile/orders/:id',
+  INGREDIENTS = '/ingredients/:id',
+}

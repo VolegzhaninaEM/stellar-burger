@@ -48,3 +48,46 @@ export type TApiError = {
 export type TConstructorIngredient = TIngredient & {
   uniqueId: string;
 };
+
+export type TPasswordReset = {
+  email?: string;
+  success: boolean;
+  message?: string;
+};
+
+export type TUser = {
+  email: string;
+  name: string;
+};
+
+export type TAuthResponse = {
+  success: boolean;
+  user: TUser;
+  accessToken: string;
+  refreshToken: string;
+};
+
+export type TLogoutResponse = {
+  success: boolean;
+  message: string;
+};
+
+export type TTokenResponse = {
+  success: boolean;
+  accessToken: string;
+  refreshToken: string;
+};
+
+export type TAuthState = {
+  user: TUser | null;
+  accessToken: string | null;
+  refreshToken: string | null;
+  loading: boolean;
+  error: string | null;
+  authChecked: boolean;
+};
+
+export type TLocationState = {
+  background?: Location;
+  from?: string;
+};

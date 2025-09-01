@@ -31,10 +31,12 @@ export async function request<T>(
   body?: BodyInit,
   token?: string
 ): Promise<T> {
-  const headers = {
-    ...apiConfig.headers,
-    ...(token && { Authorization: `Bearer ${token}` }),
-  };
+  const headers: Record<string, string> = { ...apiConfig.headers };
+
+  if (token) {
+    const cleanToken = token.replace(/^Bearer\s+/i, '').trim();
+    headers.Authorization = `Bearer ${cleanToken}`;
+  }
   const res = await fetch(`${apiConfig.baseUrl}${endpoint}`, {
     method,
     headers,

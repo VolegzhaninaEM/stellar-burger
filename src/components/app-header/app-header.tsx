@@ -4,33 +4,65 @@ import {
   Logo,
   ProfileIcon,
 } from '@krgaa/react-developer-burger-ui-components';
+import { NavLink } from 'react-router-dom';
+
+import { ROUTES } from '@utils/constants.ts';
 
 import type { JSX } from 'react';
 
 import styles from './app-header.module.css';
 
-export const AppHeader = (): JSX.Element => {
+export const AppHeader = (props: { isAuth: boolean | null }): JSX.Element => {
+  const activeLink = `${styles.link} ${styles.link_active}`;
+  const pendingText = 'text text_type_main-default text_color_inactive ml-2';
+  const activeText = 'text text_type_main-default ml-2';
+  const linkLast = `${styles.link} ${styles.link_position_last}`;
   return (
     <header className={styles.header}>
       <nav className={`${styles.menu} p-4`}>
         <div className={styles.menu_part_left}>
           {/* Тут должны быть ссылки, а не например кнопки или абзацы */}
-          <a href="/" className={`${styles.link} ${styles.link_active}`}>
-            <BurgerIcon type="primary" />
-            <p className="text text_type_main-default ml-2">Конструктор</p>
-          </a>
-          <a href="/feed" className={`${styles.link} ml-10`}>
-            <ListIcon type="secondary" />
-            <p className="text text_type_main-default ml-2">Лента заказов</p>
-          </a>
+          <NavLink
+            to={ROUTES.HOME}
+            className={({ isActive }) => (isActive ? activeLink : styles.link)}
+          >
+            {({ isActive }) => (
+              <>
+                <BurgerIcon type={isActive ? 'primary' : 'secondary'} />
+                <p className={isActive ? activeText : pendingText}>Конструктор</p>
+              </>
+            )}
+          </NavLink>
+          <NavLink
+            to="/feed"
+            className={({ isActive }) =>
+              isActive ? `${activeLink} ml-10` : `${styles.link} ml-10`
+            }
+          >
+            {({ isActive }) => (
+              <>
+                <ListIcon type={isActive ? 'primary' : 'secondary'} />
+                <p className={isActive ? activeText : pendingText}>Лента заказов</p>
+              </>
+            )}
+          </NavLink>
         </div>
         <div className={styles.logo}>
           <Logo />
         </div>
-        <a href="/profile" className={`${styles.link} ${styles.link_position_last}`}>
-          <ProfileIcon type="secondary" />
-          <p className="text text_type_main-default ml-2">Личный кабинет</p>
-        </a>
+        <NavLink
+          to={props.isAuth ? ROUTES.PROFILE : ROUTES.LOGIN}
+          className={({ isActive }) =>
+            isActive ? `${activeLink} ${linkLast}` : `${styles.link}`
+          }
+        >
+          {({ isActive }) => (
+            <>
+              <ProfileIcon type={isActive ? 'primary' : 'secondary'} />
+              <p className={isActive ? activeText : pendingText}>Личный кабинет</p>
+            </>
+          )}
+        </NavLink>
       </nav>
     </header>
   );

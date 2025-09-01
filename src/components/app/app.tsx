@@ -1,93 +1,124 @@
-import { memo, useCallback, useEffect } from 'react';
-import { DndProvider } from 'react-dnd';
-import { HTML5Backend } from 'react-dnd-html5-backend';
-
-import { useAppDispatch, useAppSelector } from '../../services/hooks.ts';
 import {
-  clearIngredient,
-  setIngredient,
-} from '../../services/ingredientDetailsSlice.ts';
+  ForgotPassword,
+  HomePage,
+  LoginPage,
+  ProfilePage,
+  RegisterPage,
+  ResetPassword,
+} from '@/pages';
+import { memo, useEffect } from 'react';
+import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
+
+import { fetchUser, refreshToken } from '../../services/authSlice.ts';
+import { useAppDispatch, useAppSelector } from '../../services/hooks';
 import { fetchIngredients } from '../../services/ingredientsSlice.ts';
-import { closeOrderModal, createOrder } from '../../services/orderSlice.ts';
-import { AppHeader } from '@components/app-header/app-header';
-import { BurgerConstructor } from '@components/burger-contructor/burger-constructor';
-import BurgerIngredients from '@components/burger-ingredients/burger-ingredients.tsx';
+import { AppHeader } from '@components/app-header/app-header.tsx';
 import IngredientDetails from '@components/ingredient-details/ingredient-details.tsx';
 import { Modal } from '@components/modal/modal.tsx';
-import OrderDetails from '@components/order-details/order-details.tsx';
+import { ProfileOrders } from '@components/profile-orders/profile-orders.tsx';
+import { ProfileUpdateForm } from '@components/profile-update-form/profile-update-form.tsx';
+import { ProtectedResetRoute } from '@components/protected-reset-route/protected-reset-route.tsx';
+import { ProtectedRouteElement } from '@components/protected-route-element/protected-route-element.tsx';
+import IngredientPage from '@pages/ingredient-page/ingredient-page.tsx';
+import { ROUTES } from '@utils/constants.ts';
+import { getCookie } from '@utils/cookies.ts';
 
-import type { AppDispatch } from '@services/store.ts';
-import type { TIngredient } from '@utils/types.ts';
+import type { RootState } from '@services/store.ts';
+import type { TLocationState } from '@utils/types.ts';
 import type { JSX } from 'react';
 
-import styles from './app.module.css';
-
 export const App = (): JSX.Element => {
-  const dispatch: AppDispatch = useAppDispatch();
-
-  const loading = useAppSelector((s) => s.ingredients.status === 'loading');
-  const item = useAppSelector((s) => s.ingredientDetails);
-  const orderNumber = useAppSelector((s) => s.order.number);
+  const location = useLocation();
+  const state = location.state as TLocationState;
+  const background = state?.background ?? location;
+  const isAuth = useAppSelector((s: RootState) => s.auth.accessToken);
+  const authChecked = useAppSelector((s: RootState) => s.auth.authChecked);
+  const from: string = (location.state as { from?: string })?.from ?? ROUTES.HOME;
+  const ingredients = useAppSelector((s) => s.ingredients.items);
+  const ingredient = ingredients.find(
+    (i) => i._id === location.pathname.split('/').pop()
+  );
+  const dispatch = useAppDispatch();
 
   useEffect(() => {
-    void dispatch(fetchIngredients());
+    const fetchData = async (): Promise<void> => {
+      const accessToken = getCookie('accessToken');
+      if (accessToken) {
+        await dispatch(fetchUser());
+      }
+      await dispatch(fetchIngredients());
+    };
+
+    try {
+      void fetchData();
+    } catch (error) {
+      console.error(error);
+    }
   }, [dispatch]);
 
-  const handleIngredientClick = useCallback(
-    (ingredientItem: TIngredient) => {
-      dispatch(setIngredient(ingredientItem));
-    },
-    [dispatch]
-  );
-  const { buns, ingredients } = useAppSelector((s) => s.burgerConstructor);
-  const handleOrderButtonClick = useCallback(() => {
-    if (!buns) return;
-    const ids: string[] = [
-      buns._id,
-      ...ingredients.map((i: TIngredient): string => i._id),
-      buns._id,
-    ];
-    void dispatch(createOrder(ids));
-  }, [dispatch, buns, ingredients]);
+  useEffect(() => {
+    const fetchData = async (): Promise<void> => {
+      const hasRefreshToken = localStorage.getItem('refreshToken');
+      if (!isAuth && hasRefreshToken) {
+        await dispatch(refreshToken());
+      }
+    };
 
-  const closeModal = useCallback(() => {
-    dispatch(clearIngredient());
-    dispatch(closeOrderModal());
-  }, [dispatch]);
+    try {
+      void fetchData();
+    } catch (error) {
+      console.error(error);
+    }
+  }, [dispatch, isAuth]);
+
+  if (!authChecked) {
+    return <div>Загрузка...</div>; // 🔁 Показываем спиннер, пока не знаем статус
+  }
 
   return (
     <>
-      {loading ? (
-        <p>Загрузка…</p>
-      ) : (
-        <div className={styles.app} id="app">
-          <AppHeader />
-          <h1 className={`${styles.title} text text_type_main-large mt-10 mb-5 pl-5`}>
-            Соберите бургер
-          </h1>
-          <DndProvider backend={HTML5Backend}>
-            <main className={`${styles.main} pl-5 pr-5`}>
-              <BurgerIngredients
-                handleIngredientClick={handleIngredientClick}
-                extendedClass={styles.scroll}
-              />
-              <BurgerConstructor
-                handleOrderButtonClick={handleOrderButtonClick}
-                extendedClass={styles.scroll}
-              />
-            </main>
-          </DndProvider>
-          {item && (
-            <Modal onClose={closeModal}>
-              <IngredientDetails card={item} />
-            </Modal>
-          )}
-          {orderNumber !== null && (
-            <Modal onClose={closeModal}>
-              <OrderDetails orderNumber={orderNumber} />
-            </Modal>
-          )}
-        </div>
+      <AppHeader isAuth={!!isAuth} />
+      <Routes location={background}>
+        <Route path={ROUTES.HOME} element={<HomePage />} />
+        <Route
+          path={ROUTES.LOGIN}
+          element={!isAuth ? <LoginPage /> : <Navigate to={from} />}
+        />
+        <Route
+          path={ROUTES.FORGOT_PASSWORD}
+          element={!isAuth ? <ForgotPassword /> : <Navigate to={from} />}
+        />
+        <Route
+          path={ROUTES.PROFILE}
+          element={<ProtectedRouteElement element={<ProfilePage />} />}
+        >
+          <Route path={ROUTES.PROFILE} element={<ProfileUpdateForm />} />
+          <Route path={ROUTES.PROFILE_ORDERS} element={<ProfileOrders />} />
+          <Route path={ROUTES.PROFILE_ORDER} element={<></>} />
+        </Route>
+        <Route path={ROUTES.INGREDIENTS} element={<IngredientPage />} />
+        <Route path={ROUTES.REGISTER} element={<RegisterPage />} />
+        <Route
+          path={ROUTES.RESET_PASSWORD}
+          element={
+            <ProtectedResetRoute
+              element={!isAuth ? <ResetPassword /> : <Navigate to={ROUTES.HOME} />}
+            />
+          }
+        />
+      </Routes>
+
+      {state?.background && (
+        <Routes>
+          <Route
+            path="/ingredients/:id"
+            element={
+              <Modal onClose={() => window.history.back()}>
+                <IngredientDetails card={ingredient} />
+              </Modal>
+            }
+          />
+        </Routes>
       )}
     </>
   );

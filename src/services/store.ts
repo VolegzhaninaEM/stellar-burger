@@ -1,5 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
 
+import authReducer from './authSlice';
 import constructorReducer from './constructorSlice';
 import ingredientDetailsReducer from './ingredientDetailsSlice';
 import ingredientsReducer from './ingredientsSlice';
@@ -11,6 +12,7 @@ export const store = configureStore({
     ingredients: ingredientsReducer,
     ingredientDetails: ingredientDetailsReducer,
     order: orderReducer,
+    auth: authReducer,
   },
 });
 

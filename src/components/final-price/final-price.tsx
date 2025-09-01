@@ -10,12 +10,14 @@ type TPriceData = {
   ingredients: TIngredient[];
   buns: TIngredient;
   handleOrderButtonClick: () => void;
+  caption: string;
 };
 
 const FinalPrice = ({
   ingredients,
   buns,
   handleOrderButtonClick,
+  caption,
 }: TPriceData): JSX.Element => {
   const totalPrice = useMemo(() => {
     if (!ingredients) return buns ? buns.price * 2 : 0;
@@ -36,7 +38,7 @@ const FinalPrice = ({
         size="medium"
         onClick={handleOrderButtonClick}
       >
-        Оформить заказ
+        {caption}
       </Button>
     </div>
   );

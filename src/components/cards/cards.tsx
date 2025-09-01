@@ -29,3 +29,12 @@ const Cards = (props: TCards): JSX.Element => {
 };
 
 export default memo(Cards);
+
+// const navigate = useNavigate();
+// const location = useLocation();
+//
+// const openModal = (): void => {
+//   void navigate(`/ingredients/${ingredient._id}`, {
+//     state: { background: location }, // запоминаем «фон»
+//   });
+// };
