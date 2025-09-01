@@ -3,6 +3,7 @@ import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { request } from '@utils/api';
 import { getCookie, setCookie } from '@utils/cookies.ts';
 
+import type { PayloadAction } from '@reduxjs/toolkit';
 import type {
   TAuthResponse,
   TAuthState,
@@ -167,7 +168,11 @@ const initialState: TAuthState = {
 const authSlice = createSlice({
   name: 'auth',
   initialState,
-  reducers: {},
+  reducers: {
+    setAuthChecked: (state, action: PayloadAction<boolean>) => {
+      state.authChecked = action.payload;
+    },
+  },
   extraReducers: (builder) =>
     builder
       .addCase(fetchUser.pending, (s) => {
@@ -252,4 +257,5 @@ const authSlice = createSlice({
       }),
 });
 
+export const { setAuthChecked } = authSlice.actions;
 export default authSlice.reducer;
