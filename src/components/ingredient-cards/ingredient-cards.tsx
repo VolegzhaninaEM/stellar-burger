@@ -16,10 +16,10 @@ import {
 import IngredientCardOuter from '@components/ingredient-card-outer/ingredient-card-outer.tsx';
 import IngredientCard from '@components/ingredient-card/ingredient-card';
 
-import type { TConstructorIngredient } from '@utils/types.ts';
+import type { TConstructorIngredient, TDroppedItem } from '@utils/types.ts';
 import type { JSX } from 'react';
 
-import ingredientCardSstyles from './ingredient-cards.module.css';
+import ingredientCardsStyles from './ingredient-cards.module.css';
 
 const IngredientCards = (props: { extendedClass?: string }): JSX.Element => {
   const { buns, ingredients } = useAppSelector((s) => s.burgerConstructor);
@@ -47,23 +47,23 @@ const IngredientCards = (props: { extendedClass?: string }): JSX.Element => {
     dispatch(incrementCounter(ingredient.uniqueId));
   };
 
-  const [{ opacity }, dropIngredient] = useDrop(() => ({
+  const [{ opacity }, dropIngredient] = useDrop<
+    TDroppedItem,
+    unknown,
+    { opacity: number }
+  >({
     accept: 'ingredient',
-    collect: (monitor): { opacity: number } => {
-      return {
-        opacity: monitor.isOver() ? 0.5 : 1,
-      };
-    },
-    drop: (item: { ingredient: TConstructorIngredient }): void => {
-      addElement(item.ingredient);
-    },
-  }));
+    collect: (monitor) => ({
+      opacity: monitor.isOver() ? 0.5 : 1,
+    }),
+    drop: ({ ingredient }) => addElement(ingredient),
+  });
 
   return (
     <div
       ref={dropIngredient as unknown as React.Ref<HTMLDivElement>}
       style={{ opacity }}
-      className={`${ingredientCardSstyles.cards}`}
+      className={`${ingredientCardsStyles.cards}`}
     >
       {buns && <IngredientCardOuter position={'top'} bun={buns} />}
       <div className={props.extendedClass}>
