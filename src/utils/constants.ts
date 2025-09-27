@@ -21,4 +21,6 @@ export enum ROUTES {
   PROFILE_ORDERS = '/profile/orders',
   PROFILE_ORDER = '/profile/orders/:id',
   INGREDIENTS = '/ingredients/:id',
+  FEEDS = '/feed',
+  FEED = '/feed/:id',
 }

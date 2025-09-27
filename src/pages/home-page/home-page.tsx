@@ -21,7 +21,7 @@ import type { JSX } from 'react';
 
 import styles from './home-page.module.css';
 
-export const HomePage = (): JSX.Element => {
+const HomePage = (): JSX.Element => {
   const dispatch: AppDispatch = useAppDispatch();
   const navigate = useNavigate();
   const location = useLocation();

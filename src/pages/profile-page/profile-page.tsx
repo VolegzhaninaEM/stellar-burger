@@ -7,7 +7,7 @@ import type { JSX } from 'react';
 
 import styles from './profile-page.module.css';
 
-export const ProfilePage = (): JSX.Element => {
+const ProfilePage = (): JSX.Element => {
   return (
     <div className={`${styles.profile__container} mt-20`}>
       <ProfileMaster />

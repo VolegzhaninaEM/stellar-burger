@@ -1,0 +1,49 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  padding: 40px 20px;
+}
+
+.title {
+  margin-bottom: 60px;
+  color: #f2f2f3;
+  font-weight: 600;
+  font-size: 40px;
+  line-height: 40px;
+  text-align: center;
+}
+
+.feedsWrapper {
+  display: flex;
+  gap: 40px;
+  width: 100%;
+  max-width: 1240px;
+}
+
+.ordersSection {
+  flex: 1;
+}
+
+.statisticsSection {
+  width: 600px;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  color: #8585ad;
+  font-size: 18px;
+}
+
+.error {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  color: #e52b1a;
+  font-size: 18px;
+}

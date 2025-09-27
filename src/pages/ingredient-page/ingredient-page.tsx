@@ -8,7 +8,7 @@ import { NotFound } from '@pages/not-found-page/not-found-page.tsx';
 
 import type { JSX } from 'react';
 
-export const IngerdientPage = (): JSX.Element => {
+const IngredientPage = (): JSX.Element => {
   const { id } = useParams();
   const dispatch = useAppDispatch();
   const ingredients = useAppSelector((s) => s.ingredients.items);
@@ -23,4 +23,4 @@ export const IngerdientPage = (): JSX.Element => {
   return <IngredientDetails card={ingredient} />;
 };
 
-export default memo(IngerdientPage);
+export default memo(IngredientPage);

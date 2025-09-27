@@ -1,10 +1,12 @@
 import {
   ForgotPassword,
   HomePage,
+  IngredientPage,
   LoginPage,
   ProfilePage,
   RegisterPage,
   ResetPassword,
+  FeedsPage,
 } from '@/pages';
 import { memo, useEffect } from 'react';
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
@@ -19,7 +21,6 @@ import { ProfileOrders } from '@components/profile-orders/profile-orders.tsx';
 import { ProfileUpdateForm } from '@components/profile-update-form/profile-update-form.tsx';
 import { ProtectedResetRoute } from '@components/protected-reset-route/protected-reset-route.tsx';
 import { ProtectedRouteElement } from '@components/protected-route-element/protected-route-element.tsx';
-import IngredientPage from '@pages/ingredient-page/ingredient-page.tsx';
 import { ROUTES } from '@utils/constants.ts';
 import { getCookie } from '@utils/cookies.ts';
 
@@ -112,6 +113,12 @@ export const App = (): JSX.Element => {
             />
           }
         />
+        <Route
+          path={ROUTES.FEEDS}
+          element={<ProtectedRouteElement element={<FeedsPage />} />}
+        >
+          <Route path={ROUTES.FEED} element={<></>} />
+        </Route>
       </Routes>
 
       {state?.background && (

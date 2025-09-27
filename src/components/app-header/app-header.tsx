@@ -38,7 +38,7 @@ export const AppHeader: FC<TAppHeaderProps> = ({ isAuth }): JSX.Element => {
             )}
           </NavLink>
           <NavLink
-            to="/feed"
+            to={ROUTES.FEEDS}
             className={({ isActive }) =>
               isActive ? `${activeLink} ml-10` : `${styles.link} ml-10`
             }
