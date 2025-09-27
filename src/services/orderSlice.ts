@@ -2,44 +2,83 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 import { request } from '../utils/api';
 
-type OrderState = {
-  number: number | null;
-  status: 'idle' | 'loading' | 'error';
+import type { LoadingStatus, OrderState } from '../../src/utils/types';
+import type { PayloadAction } from '@reduxjs/toolkit';
+
+// Типы для API ответа
+type OrderResponse = {
+  order: {
+    number: number;
+  };
 };
 
-const initialState: OrderState = { number: null, status: 'idle' };
+const initialState: OrderState = {
+  number: null,
+  status: 'idle',
+  error: null,
+};
 
-export const createOrder = createAsyncThunk(
-  'order/create',
-  async (ingredients: string[]) => {
-    const { order } = await request<{ order: { number: number } }>(
+// Создание заказа
+export const createOrder = createAsyncThunk<
+  number, // возвращаемый тип
+  string[], // тип аргумента
+  {
+    rejectValue: string; // тип для rejectWithValue
+  }
+>('order/create', async (ingredients: string[], { rejectWithValue }) => {
+  try {
+    const response = await request<OrderResponse>(
       '/orders',
       'POST',
       JSON.stringify({ ingredients })
     );
-    return order.number;
+    return response.order.number;
+  } catch (error) {
+    // Обработка ошибок с правильной типизацией
+    const errorMessage = error instanceof Error ? error.message : 'Неизвестная ошибка';
+    return rejectWithValue(errorMessage);
   }
-);
+});
 
 const orderSlice = createSlice({
   name: 'order',
   initialState,
   reducers: {
-    closeOrderModal: () => initialState,
+    closeOrderModal: (state) => {
+      state.number = null;
+      state.status = 'idle';
+      state.error = null;
+    },
+    clearOrderError: (state) => {
+      state.error = null;
+    },
   },
   extraReducers: (builder) =>
     builder
-      .addCase(createOrder.pending, (s) => {
-        s.status = 'loading';
+      .addCase(createOrder.pending, (state) => {
+        state.status = 'loading';
+        state.error = null;
       })
-      .addCase(createOrder.fulfilled, (s, { payload }) => {
-        s.number = payload;
-        s.status = 'idle';
+      .addCase(createOrder.fulfilled, (state, { payload }: PayloadAction<number>) => {
+        state.number = payload;
+        state.status = 'succeeded';
+        state.error = null;
       })
-      .addCase(createOrder.rejected, (s) => {
-        s.status = 'error';
+      .addCase(createOrder.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload ?? action.error.message ?? 'Ошибка создания заказа';
       }),
 });
 
-export const { closeOrderModal } = orderSlice.actions;
+export const { closeOrderModal, clearOrderError } = orderSlice.actions;
 export default orderSlice.reducer;
+
+// Селекторы с типизацией
+export const selectOrderNumber = (state: { order: OrderState }): number | null =>
+  state.order.number;
+export const selectOrderStatus = (state: { order: OrderState }): LoadingStatus =>
+  state.order.status;
+export const selectOrderError = (state: { order: OrderState }): string | null =>
+  state.order.error;
+export const selectIsOrderLoading = (state: { order: OrderState }): boolean =>
+  state.order.status === 'loading';

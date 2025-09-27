@@ -13,10 +13,10 @@ import {
   incrementCounter,
   resetCounter,
 } from '../../services/ingredientsSlice';
-import IngredientCardOuter from '@components/ingredient-card-outer/ingredient-card-outer.tsx';
-import IngredientCard from '@components/ingredient-card/ingredient-card';
+import IngredientCardOuter from '../ingredient-card-outer/ingredient-card-outer.tsx';
+import IngredientCard from '../ingredient-card/ingredient-card';
 
-import type { TConstructorIngredient, TDroppedItem } from '@utils/types.ts';
+import type { TConstructorIngredient, TDroppedItem } from '../../utils/types';
 import type { JSX } from 'react';
 
 import ingredientCardsStyles from './ingredient-cards.module.css';

@@ -100,3 +100,54 @@ export type TIngredientCardProps = {
   index: number;
   moveIngredient: (from: number, to: number) => void;
 };
+
+// Общие типы для Redux store
+
+// Типы для статусов загрузки
+export type LoadingStatus = 'idle' | 'loading' | 'succeeded' | 'failed';
+
+// Тип для базового состояния с загрузкой
+export type BaseState = {
+  status: LoadingStatus;
+  error: string | null;
+};
+
+// Тип для асинхронных операций
+export type AsyncState = BaseState & {
+  loading: boolean;
+};
+
+// Типы для ошибок
+export type ApiError = {
+  message: string;
+  status?: number;
+};
+
+// Серилизованная ошибка от createAsyncThunk
+export type SerializedError = {
+  name?: string;
+  message?: string;
+  stack?: string;
+  code?: string;
+};
+
+// Типы для состояния конструктора
+export type ConstructorState = {
+  buns: TConstructorIngredient | null;
+  ingredients: TConstructorIngredient[];
+};
+
+// Состояние ингредиентов
+export type IngredientsState = {
+  items: TIngredient[];
+  status: LoadingStatus;
+  error: string | null;
+  counters: Record<string, number>;
+};
+
+// Состояние заказа
+export type OrderState = {
+  number: number | null;
+  status: LoadingStatus;
+  error: string | null;
+};
