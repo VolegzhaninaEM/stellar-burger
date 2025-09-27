@@ -1,18 +1,17 @@
+import OrderCards from '@/components/order-cards/order-cards';
 import { memo } from 'react';
 
 import type { JSX } from 'react';
 
 import feedsStyles from './feeds-page.module.css';
-
-const FeedsPage = (): JSX.Element => {
+const Feeds = (): JSX.Element => {
   return (
     <div className={feedsStyles.container}>
       <h1 className={feedsStyles.title}>Лента заказов</h1>
 
       <div className={feedsStyles.feedsWrapper}>
         <section className={feedsStyles.ordersSection}>
-          {/* Здесь будет список заказов */}
-          <div className={feedsStyles.loading}>Загрузка заказов...</div>
+          <OrderCards />
         </section>
 
         <aside className={feedsStyles.statisticsSection}>
@@ -24,4 +23,4 @@ const FeedsPage = (): JSX.Element => {
   );
 };
 
-export default memo(FeedsPage);
+export default memo(Feeds);

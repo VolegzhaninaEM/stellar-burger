@@ -1,0 +1,172 @@
+@import url('../app/app.module.css');
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  height: 100%;
+  max-height: calc(100vh - 284px);
+  padding: 0 8px;
+  padding-right: 16px; /* Дополнительный отступ справа для скроллбара */
+  overflow-y: auto;
+}
+
+/* Стили скроллбара для WebKit браузеров */
+
+.container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.container::-webkit-scrollbar-track {
+  margin: 8px 0;
+  background: #2f2f37;
+}
+
+.container::-webkit-scrollbar-thumb {
+  width: 8px;
+  margin: 2px;
+  background: #8585ad;
+  border-radius: 4px;
+}
+
+.container::-webkit-scrollbar-track-piece:end {
+  margin-bottom: 52px;
+  background: #2f2f37;
+}
+
+.container::-webkit-scrollbar-track-piece:start {
+  margin-top: 8px;
+  background: #2f2f37;
+}
+
+/* Поддержка для Firefox */
+
+@supports (scrollbar-color: auto) {
+  .container {
+    scrollbar-color: #8585ad #2f2f37;
+    scrollbar-width: thin;
+  }
+}
+
+.orderCard {
+  padding: 24px;
+  background: #1c1c21;
+  border: 1px solid #2f2f37;
+  border-radius: 40px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.orderCard:hover {
+  border-color: #4c4cda;
+  box-shadow: 0 4px 16px rgb(76 76 218 / 10%);
+}
+
+.orderHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.orderNumber {
+  color: #f2f2f3;
+  font-weight: 600;
+  font-size: 24px;
+}
+
+.orderTime {
+  color: #8585ad;
+  font-size: 16px;
+}
+
+.orderStatus {
+  margin-bottom: 24px;
+  font-size: 16px;
+}
+
+.statusDone {
+  color: #0cc;
+}
+
+.statusPending {
+  color: #f2f2f3;
+}
+
+.statusCreated {
+  color: #8585ad;
+}
+
+.orderName {
+  margin-bottom: 24px;
+  color: #f2f2f3;
+  font-weight: 600;
+  font-size: 24px;
+  line-height: 1.2;
+}
+
+.orderFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ingredientsPreview {
+  display: flex;
+  margin-left: -12px;
+}
+
+.ingredientImage {
+  position: relative;
+  width: 64px;
+  height: 64px;
+  margin-left: -12px;
+  background-position: center;
+  background-size: cover;
+  border: 2px solid #1c1c21;
+  border-radius: 50%;
+}
+
+.ingredientCounter {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  color: #f2f2f3;
+  font-weight: 600;
+  font-size: 16px;
+  background: rgb(28 28 33 / 60%);
+  border-radius: 50%;
+}
+
+.orderPrice {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #f2f2f3;
+  font-weight: 600;
+  font-size: 24px;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  color: #8585ad;
+  font-size: 18px;
+}
+
+.error {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  color: #e52b1a;
+  font-size: 18px;
+}
