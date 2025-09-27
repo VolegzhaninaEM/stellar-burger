@@ -131,6 +131,18 @@ export const App = (): JSX.Element => {
               </Modal>
             }
           />
+          <Route
+            path="/feed/:id"
+            element={
+              <Modal onClose={() => window.history.back()}>
+                {/* Здесь будет компонент с деталями заказа */}
+                <div style={{ padding: '40px', color: '#f2f2f3' }}>
+                  <h2>Детали заказа</h2>
+                  <p>Информация о заказе будет здесь</p>
+                </div>
+              </Modal>
+            }
+          />
         </Routes>
       )}
     </>

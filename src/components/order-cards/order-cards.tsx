@@ -1,6 +1,10 @@
-import { CurrencyIcon } from '@krgaa/react-developer-burger-ui-components';
-import { memo } from 'react';
+import { memo, useCallback } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 
+import OrderCard from '../order-card/order-card';
+
+import type { TIngredient } from '../../utils/types';
+import type { TOrder } from '../order-card/order-card';
 import type { JSX } from 'react';
 
 import styles from './order-cards.module.css';
@@ -19,6 +23,9 @@ type MockOrder = {
 };
 
 const OrderCards = (): JSX.Element => {
+  const location = useLocation();
+  const navigate = useNavigate();
+
   // Мокированные данные для демонстрации
   const mockOrders: MockOrder[] = [
     {
@@ -109,99 +116,86 @@ const OrderCards = (): JSX.Element => {
     },
   ];
 
-  const formatTime = (dateString: string): string => {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
+  // Мокированные ингредиенты для демонстрации
+  const mockIngredients: TIngredient[] = [
+    {
+      _id: 'ingredient1',
+      name: 'Краторная булка N-200i',
+      type: 'bun',
+      proteins: 80,
+      fat: 24,
+      carbohydrates: 53,
+      calories: 420,
+      price: 1255,
+      image: 'https://code.s3.yandex.net/react/code/bun-02.png',
+      image_mobile: 'https://code.s3.yandex.net/react/code/bun-02-mobile.png',
+      image_large: 'https://code.s3.yandex.net/react/code/bun-02-large.png',
+      __v: 0,
+    },
+    {
+      _id: 'ingredient2',
+      name: 'Биокотлета из марсианской Магнолии',
+      type: 'main',
+      proteins: 420,
+      fat: 142,
+      carbohydrates: 242,
+      calories: 4242,
+      price: 424,
+      image: 'https://code.s3.yandex.net/react/code/meat-01.png',
+      image_mobile: 'https://code.s3.yandex.net/react/code/meat-01-mobile.png',
+      image_large: 'https://code.s3.yandex.net/react/code/meat-01-large.png',
+      __v: 0,
+    },
+    {
+      _id: 'ingredient3',
+      name: 'Соус Spicy-X',
+      type: 'sauce',
+      proteins: 30,
+      fat: 20,
+      carbohydrates: 40,
+      calories: 30,
+      price: 90,
+      image: 'https://code.s3.yandex.net/react/code/sauce-02.png',
+      image_mobile: 'https://code.s3.yandex.net/react/code/sauce-02-mobile.png',
+      image_large: 'https://code.s3.yandex.net/react/code/sauce-02-large.png',
+      __v: 0,
+    },
+  ];
 
-    if (diffInHours < 1) return 'менее часа назад';
-    if (diffInHours < 24)
-      return `${diffInHours} ${diffInHours === 1 ? 'час' : 'часов'} назад`;
-    const days = Math.floor(diffInHours / 24);
-    return `${days} ${days === 1 ? 'день' : 'дней'} назад`;
-  };
+  // Конвертируем MockOrder в TOrder
+  const convertToTOrder = (mockOrder: MockOrder): TOrder => ({
+    _id: mockOrder.id,
+    ingredients: mockOrder.ingredients,
+    status: mockOrder.status as TOrder['status'],
+    name: mockOrder.name,
+    createdAt: mockOrder.createdAt,
+    updatedAt: mockOrder.createdAt,
+    number: parseInt(mockOrder.number),
+  });
 
-  const getStatusText = (status: OrderStatus): string => {
-    switch (status) {
-      case 'done':
-        return 'Выполнен';
-      case 'pending':
-        return 'Готовится';
-      case 'created':
-        return 'Создан';
-      default:
-        return 'Неизвестно';
-    }
-  };
-
-  const getStatusClass = (status: OrderStatus): string => {
-    switch (status) {
-      case 'done':
-        return styles.statusDone || '';
-      case 'pending':
-        return styles.statusPending || '';
-      case 'created':
-        return styles.statusCreated || '';
-      default:
-        return styles.statusCreated || '';
-    }
-  };
-
-  const handleOrderClick = (orderId: string): void => {
-    console.log('Clicked order:', orderId);
-    // Здесь будет логика перехода к деталям заказа
-  };
+  const handleOrderClick = useCallback(
+    (order: TOrder): void => {
+      void navigate(`/feed/${order._id}`, {
+        state: { background: location.pathname },
+      });
+    },
+    [navigate, location]
+  );
 
   return (
     <div className={styles.container}>
-      {mockOrders.map((order) => (
-        <div
-          key={order.id}
-          className={styles.orderCard}
-          onClick={() => handleOrderClick(order.id)}
-        >
-          <div className={styles.orderHeader}>
-            <span className={styles.orderNumber}>#{order.number}</span>
-            <span className={styles.orderTime}>{formatTime(order.createdAt)}</span>
-          </div>
-
-          <h3 className={styles.orderName}>{order.name}</h3>
-
-          <div className={`${styles.orderStatus || ''} ${getStatusClass(order.status)}`}>
-            {getStatusText(order.status)}
-          </div>
-
-          <div className={styles.orderFooter}>
-            <div className={styles.ingredientsPreview}>
-              {/* Показываем первые 6 ингредиентов */}
-              {order.ingredients.slice(0, 6).map((_ingredient, index) => {
-                const isLast = index === 5 && order.ingredients.length > 6;
-                const remainingCount = order.ingredients.length - 6;
-
-                return (
-                  <div
-                    key={`${order.id}-${index}`}
-                    className={styles.ingredientImage}
-                    style={{
-                      backgroundImage: `url(https://code.s3.yandex.net/react/code/meat-02.png)`,
-                      zIndex: (10 - index).toString(),
-                    }}
-                  >
-                    {isLast && remainingCount > 0 && (
-                      <div className={styles.ingredientCounter}>+{remainingCount}</div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
-
-            <div className={styles.orderPrice}>
-              <span>{order.price}</span>
-              <CurrencyIcon type="primary" />
-            </div>
-          </div>
-        </div>
-      ))}
+      {mockOrders.map((order) => {
+        const tOrder = convertToTOrder(order);
+        return (
+          <OrderCard
+            key={order.id}
+            order={tOrder}
+            ingredients={mockIngredients}
+            onClick={handleOrderClick}
+            showStatus={true}
+          />
+        );
+      })}
     </div>
   );
 };

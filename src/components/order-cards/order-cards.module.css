@@ -6,7 +6,7 @@
   gap: 16px;
   width: 100%;
   height: 100%;
-  max-height: calc(100vh - 284px);
+  max-height: calc(100vh - 180px); /* Высота экрана минус высота шапки и отступы */
   padding: 0 8px;
   padding-right: 16px; /* Дополнительный отступ справа для скроллбара */
   overflow-y: auto;
@@ -119,9 +119,8 @@
 
 .ingredientImage {
   position: relative;
-  width: 64px;
-  height: 64px;
-  margin-left: -12px;
+  width: 55px;
+  height: 55px;
   background-position: center;
   background-size: cover;
   border: 2px solid #1c1c21;
