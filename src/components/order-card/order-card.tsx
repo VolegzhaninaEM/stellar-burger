@@ -99,6 +99,22 @@ const OrderCard = ({
     }
   };
 
+  const zIndex = (index: number | null): string => {
+    return index === 0
+      ? '10'
+      : index === 1
+        ? '9'
+        : index === 2
+          ? '8'
+          : index === 3
+            ? '7'
+            : index === 4
+              ? '6'
+              : index === 5
+                ? '5'
+                : '1';
+  };
+
   // Ограничиваем количество отображаемых ингредиентов до 6
   const visibleIngredients = uniqueIngredients.slice(0, 6);
   const hiddenCount = uniqueIngredients.length - 6;
@@ -128,13 +144,16 @@ const OrderCard = ({
           {visibleIngredients.map((item, index) => {
             const isLast = index === 5 && hiddenCount > 0;
             return (
-              <div key={`${item.ingredient._id}-${index}`} className={styles.imgCircle}>
+              <div
+                key={`${item.ingredient._id}-${index}`}
+                className={styles.imgCircle}
+                style={{ zIndex: zIndex(index) }}
+              >
                 <div className={styles.backgroundCircle}>
                   <div
                     className={styles.ingredientImage}
                     style={{
                       backgroundImage: `url(${item.ingredient.image || item.ingredient.image_mobile})`,
-                      zIndex: 6 - index,
                     }}
                   >
                     {isLast && (
@@ -148,7 +167,7 @@ const OrderCard = ({
         </div>
 
         <div className={styles.price}>
-          <span className={styles.priceValue}>{totalPrice}</span>
+          <span className="text text_type_digits-default">{totalPrice}</span>
           <CurrencyIcon type="primary" />
         </div>
       </div>

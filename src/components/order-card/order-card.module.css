@@ -34,10 +34,10 @@
 
 .imgCircle::before {
   position: absolute;
-  inset: 0;
+  left: 1px;
   z-index: -1;
-  width: 55px;
-  height: 55px;
+  width: 58px;
+  height: 58px;
   background: linear-gradient(to right, rgb(128 26 178 / 100%), rgb(76 76 255 / 100%));
   border-radius: 50%;
   content: '';
@@ -47,11 +47,9 @@
   position: absolute;
   top: 2px;
   left: 2px;
-  z-index: 1;
   display: inline-block;
-  width: 60px;
-  height: 60px;
-  margin: 75px 0;
+  width: 55px;
+  height: 55px;
   margin: 0;
   background-color: #131316;
   border-radius: 50%;
@@ -112,12 +110,9 @@
   position: relative;
   width: 55px;
   height: 55px;
-  margin-left: -16px;
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
-  border: 2px solid #1c1c21;
-  border-radius: 50%;
 }
 
 .ingredientImage:first-child {

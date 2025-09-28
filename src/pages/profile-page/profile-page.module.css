@@ -1,5 +1,10 @@
 .profile__container {
+  position: relative;
+  top: 88px;
   display: flex;
   justify-content: space-around;
+  align-items: baseline;
+  width: 62vw;
   height: 100vh;
+  margin: auto;
 }

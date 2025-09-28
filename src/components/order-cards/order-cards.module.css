@@ -1,5 +1,3 @@
-@import url('../app/app.module.css');
-
 .container {
   display: flex;
   flex-direction: column;

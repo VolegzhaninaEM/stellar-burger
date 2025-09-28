@@ -6,3 +6,5 @@ export { default as ProfilePage } from './profile-page/profile-page';
 export { default as IngredientPage } from './ingredient-page/ingredient-page';
 export { default as RegisterPage } from './register-page/register-page';
 export { default as FeedsPage } from './feeds-page/feeds-page';
+export { default as FeedOrderPage } from './feed-order-page/feed-order-page';
+export { default as ProfileOrderPage } from './profile-order-page/profile-order-page';

@@ -7,6 +7,8 @@ import {
   RegisterPage,
   ResetPassword,
   FeedsPage,
+  FeedOrderPage,
+  ProfileOrderPage,
 } from '@/pages';
 import { memo, useEffect } from 'react';
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
@@ -17,6 +19,7 @@ import { fetchIngredients } from '../../services/ingredientsSlice.ts';
 import { AppHeader } from '@components/app-header/app-header.tsx';
 import IngredientDetails from '@components/ingredient-details/ingredient-details.tsx';
 import { Modal } from '@components/modal/modal.tsx';
+import OrderInfo from '@components/order-info/order-info.tsx';
 import { ProfileOrders } from '@components/profile-orders/profile-orders.tsx';
 import { ProfileUpdateForm } from '@components/profile-update-form/profile-update-form.tsx';
 import { ProtectedResetRoute } from '@components/protected-reset-route/protected-reset-route.tsx';
@@ -101,7 +104,7 @@ export const App = (): JSX.Element => {
         >
           <Route path={ROUTES.PROFILE} element={<ProfileUpdateForm />} />
           <Route path={ROUTES.PROFILE_ORDERS} element={<ProfileOrders />} />
-          <Route path={ROUTES.PROFILE_ORDER} element={<></>} />
+          <Route path={ROUTES.PROFILE_ORDER} element={<ProfileOrderPage />} />
         </Route>
         <Route path={ROUTES.INGREDIENTS} element={<IngredientPage />} />
         <Route path={ROUTES.REGISTER} element={<RegisterPage />} />
@@ -116,15 +119,21 @@ export const App = (): JSX.Element => {
         <Route
           path={ROUTES.FEEDS}
           element={<ProtectedRouteElement element={<FeedsPage />} />}
-        >
-          <Route path={ROUTES.FEED} element={<></>} />
-        </Route>
+        />
+        <Route
+          path={ROUTES.FEED}
+          element={<ProtectedRouteElement element={<FeedOrderPage />} />}
+        />
+        <Route
+          path={ROUTES.PROFILE_ORDER}
+          element={<ProtectedRouteElement element={<ProfileOrderPage />} />}
+        />
       </Routes>
 
-      {state?.background && (
+      {state?.background !== undefined && (
         <Routes>
           <Route
-            path="/ingredients/:id"
+            path={ROUTES.INGREDIENTS}
             element={
               <Modal onClose={() => window.history.back()}>
                 <IngredientDetails card={ingredient} />
@@ -132,14 +141,18 @@ export const App = (): JSX.Element => {
             }
           />
           <Route
-            path="/feed/:id"
+            path={ROUTES.FEED}
             element={
               <Modal onClose={() => window.history.back()}>
-                {/* Здесь будет компонент с деталями заказа */}
-                <div style={{ padding: '40px', color: '#f2f2f3' }}>
-                  <h2>Детали заказа</h2>
-                  <p>Информация о заказе будет здесь</p>
-                </div>
+                <OrderInfo ingredients={ingredients} />
+              </Modal>
+            }
+          />
+          <Route
+            path={ROUTES.PROFILE_ORDER}
+            element={
+              <Modal onClose={() => window.history.back()}>
+                <OrderInfo ingredients={ingredients} />
               </Modal>
             }
           />
