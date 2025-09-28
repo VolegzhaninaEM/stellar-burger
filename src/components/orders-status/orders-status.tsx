@@ -4,7 +4,7 @@ import {
   selectFeedTotal,
   selectFeedTotalToday,
 } from '@/services';
-import { memo, useMemo } from 'react';
+import { memo, useMemo, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
 import type { TOrder } from '../order-card/order-card';
@@ -18,6 +18,35 @@ const OrdersStatus = (): JSX.Element => {
   const total = useAppSelector(selectFeedTotal);
   const totalToday = useAppSelector(selectFeedTotalToday);
 
+  // Логируем информацию о заказах для отладки
+  useEffect(() => {
+    if (orders.length > 0) {
+      console.log('📊 Общее количество заказов в ленте:', orders.length);
+
+      // Подсчитываем заказы по статусам
+      const doneCount = orders.filter((order) => order.status === 'done').length;
+      const pendingCount = orders.filter((order) => order.status === 'pending').length;
+      const createdCount = orders.filter((order) => order.status === 'created').length;
+      const otherCount = orders.length - doneCount - pendingCount - createdCount;
+
+      console.log(`📈 Статистика заказов:
+        - Готовы (done): ${doneCount}
+        - В очереди (pending): ${pendingCount}
+        - Созданы (created): ${createdCount}
+        - Другой статус: ${otherCount}`);
+
+      if (otherCount > 0) {
+        // Если есть заказы с другими статусами, выводим их для анализа
+        const otherStatuses = orders
+          .filter((order) => !['done', 'pending', 'created'].includes(order.status))
+          .map((order) => `${order.number}: ${order.status}`);
+        console.log('❓ Заказы с неизвестными статусами:', otherStatuses);
+      }
+    } else {
+      console.log('❌ Нет заказов в ленте');
+    }
+  }, [orders]);
+
   // Разделяем заказы по статусу и группируем по колонкам (максимум 10 в колонке)
   const { readyOrderColumns, inProgressOrderColumns } = useMemo(() => {
     const ready: TOrder[] = [];
@@ -26,8 +55,17 @@ const OrdersStatus = (): JSX.Element => {
     orders.forEach((order) => {
       if (order.status === 'done') {
         ready.push(order);
-      } else if (order.status === 'pending' || order.status === 'created') {
+      } else {
+        // Все заказы, которые не 'done', считаем как "в работе"
+        // Это включает статусы 'pending', 'created' и любые другие
         inProgress.push(order);
+
+        // Выводим информацию о заказе для отладки
+        if (order.status !== 'pending' && order.status !== 'created') {
+          console.log(
+            `ℹ️ Заказ ${order.number} с нестандартным статусом добавлен в раздел "В работе"`
+          );
+        }
       }
     });
 

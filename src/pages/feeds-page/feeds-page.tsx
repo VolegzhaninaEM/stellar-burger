@@ -1,5 +1,6 @@
 import OrderCards from '@/components/order-cards/order-cards';
-import { useAppDispatch, fetchIngredients } from '@/services';
+import { useAppDispatch } from '@/services';
+import { feedConnect, feedDisconnected } from '@/services/feedSlice';
 import { memo, useEffect } from 'react';
 
 import OrdersStatus from '@components/orders-status/orders-status';
@@ -11,9 +12,14 @@ import feedsStyles from './feeds-page.module.css';
 const Feeds = (): JSX.Element => {
   const dispatch = useAppDispatch();
 
-  // Загружаем ингредиенты при монтировании страницы
-  useEffect((): void => {
-    void dispatch(fetchIngredients());
+  // Подключаемся к WebSocket для загрузки заказов при монтировании страницы
+  // и отключаемся при размонтировании
+  useEffect((): (() => void) => {
+    dispatch(feedConnect());
+
+    return (): void => {
+      dispatch(feedDisconnected());
+    };
   }, [dispatch]);
 
   return (

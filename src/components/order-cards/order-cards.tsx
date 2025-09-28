@@ -8,7 +8,7 @@ import {
   selectFeedError,
   selectIngredients,
 } from '@/services';
-import { memo, useCallback, useState, useMemo, useEffect } from 'react';
+import { memo, useCallback, useState, useMemo, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import OrderCard from '../order-card/order-card';
@@ -27,21 +27,60 @@ const OrderCards = (): JSX.Element => {
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
+  // Добавляем ref для отслеживания монтирования компонента
+  const isMountedRef = useRef(false);
+  // Добавляем ref для хранения ID таймера обновления
+  const updateTimerRef = useRef<number | null>(null);
+
   // Получаем данные из Redux store
   const orders = useAppSelector(selectFeedOrders);
   const ingredients = useAppSelector(selectIngredients);
   const isConnected = useAppSelector(selectFeedIsConnected);
   const error = useAppSelector(selectFeedError);
 
-  // Подключаемся к WebSocket при монтировании компонента
+  // Функция для периодического обновления данных ленты заказов
+  const setupPeriodicUpdate = useCallback(() => {
+    // Очищаем предыдущий таймер, если он был
+    if (updateTimerRef.current !== null) {
+      window.clearInterval(updateTimerRef.current);
+    }
+
+    // Устанавливаем периодическое обновление каждые 15 секунд
+    updateTimerRef.current = window.setInterval(() => {
+      console.log('🔄 Периодическое обновление ленты заказов');
+      // Переподключаемся, только если компонент все еще смонтирован
+      if (isMountedRef.current) {
+        dispatch(feedConnect());
+      }
+    }, 15000); // 15 секунд
+
+    return (): void => {
+      if (updateTimerRef.current !== null) {
+        window.clearInterval(updateTimerRef.current);
+        updateTimerRef.current = null;
+      }
+    };
+  }, [dispatch]);
+
+  // Подключаемся к WebSocket при монтировании компонента и настраиваем обновление
   useEffect(() => {
+    console.log('📣 Инициализация компонента OrderCards');
+    isMountedRef.current = true;
+
+    // Запускаем первичное подключение
     dispatch(feedConnect());
+
+    // Настраиваем периодическое обновление
+    const cleanup = setupPeriodicUpdate();
 
     // Отключаемся при размонтировании компонента
     return (): void => {
+      console.log('🔌 Размонтирование компонента OrderCards');
+      isMountedRef.current = false;
       dispatch(feedDisconnected());
+      cleanup();
     };
-  }, [dispatch]);
+  }, [dispatch, setupPeriodicUpdate]);
 
   const handleCloseModal = useCallback((): void => {
     setModalState(false);
@@ -67,18 +106,22 @@ const OrderCards = (): JSX.Element => {
     }, 1000);
   }, [dispatch]);
 
-  // Мемоизируем список заказов для оптимизации
+  // Мемоизируем список заказов для оптимизации и сортируем по дате создания (новые в начале)
   const orderElements = useMemo(
     () =>
-      orders.map((order) => (
-        <OrderCard
-          key={order._id}
-          order={order}
-          ingredients={ingredients}
-          onClick={handleOrderClick}
-          showStatus={false}
-        />
-      )),
+      [...orders] // Создаем копию массива для сортировки
+        .sort(
+          (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+        )
+        .map((order) => (
+          <OrderCard
+            key={order._id}
+            order={order}
+            ingredients={ingredients}
+            onClick={handleOrderClick}
+            showStatus={false}
+          />
+        )),
     [orders, ingredients, handleOrderClick]
   );
 

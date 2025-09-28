@@ -34,16 +34,22 @@ const ProfileOrderCards = (): JSX.Element => {
   const isConnected = useAppSelector(selectProfileOrdersIsConnected);
   const error = useAppSelector(selectProfileOrdersError);
 
-  // Подключаемся к WebSocket при монтировании компонента
+  // Подключаемся к WebSocket при монтировании компонента, только если не подключены
   useEffect(() => {
-    dispatch(profileOrdersConnect());
+    if (!isConnected) {
+      console.log('🔄 Подключение к WebSocket для профиля заказов (не был подключен)');
+      dispatch(profileOrdersConnect());
+    } else {
+      console.log('✅ WebSocket для профиля заказов уже подключен');
+    }
 
     // Отключаемся при размонтировании компонента
     return (): void => {
+      console.log('🔌 Отключение WebSocket при размонтировании ProfileOrderCards');
       dispatch(profileOrdersDisconnected());
       dispatch(clearProfileOrders());
     };
-  }, [dispatch]);
+  }, [dispatch, isConnected]);
 
   const handleCloseModal = useCallback((): void => {
     setModalState(false);
