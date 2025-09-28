@@ -7,6 +7,11 @@ import {
   selectFeedIsConnected,
   selectFeedError,
   selectIngredients,
+  profileOrdersConnect,
+  profileOrdersDisconnected,
+  selectProfileOrders,
+  selectProfileOrdersIsConnected,
+  selectProfileOrdersError,
 } from '@/services';
 import { memo, useCallback, useState, useMemo, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -20,39 +25,67 @@ import type { JSX } from 'react';
 
 import styles from './order-cards.module.css';
 
-const OrderCards = (): JSX.Element => {
+type OrderCardsProps = {
+  /** Режим работы: 'feed' для ленты заказов, 'profile' для заказов профиля */
+  mode: 'feed' | 'profile';
+  /** Показывать ли статус заказа */
+  showStatus?: boolean;
+  /** Включить ли периодическое обновление (только для feed) */
+  enablePeriodicUpdate?: boolean;
+};
+
+const OrderCards = ({
+  mode,
+  showStatus = false,
+  enablePeriodicUpdate = false,
+}: OrderCardsProps): JSX.Element => {
   const [currentItem, setCurrentItem] = useState<TOrder | undefined>();
   const [isModalOpen, setModalState] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
 
-  // Добавляем ref для отслеживания монтирования компонента
+  // Refs для управления состоянием
   const isMountedRef = useRef(false);
-  // Добавляем ref для хранения ID таймера обновления
   const updateTimerRef = useRef<number | null>(null);
 
-  // Получаем данные из Redux store
-  const orders = useAppSelector(selectFeedOrders);
+  // Получаем данные в зависимости от режима
+  const orders = useAppSelector(
+    mode === 'feed' ? selectFeedOrders : selectProfileOrders
+  );
   const ingredients = useAppSelector(selectIngredients);
-  const isConnected = useAppSelector(selectFeedIsConnected);
-  const error = useAppSelector(selectFeedError);
+  const isConnected = useAppSelector(
+    mode === 'feed' ? selectFeedIsConnected : selectProfileOrdersIsConnected
+  );
+  const error = useAppSelector(
+    mode === 'feed' ? selectFeedError : selectProfileOrdersError
+  );
 
-  // Функция для периодического обновления данных ленты заказов
-  const setupPeriodicUpdate = useCallback(() => {
-    // Очищаем предыдущий таймер, если он был
+  // Действия для подключения/отключения в зависимости от режима
+  const connectAction = mode === 'feed' ? feedConnect : profileOrdersConnect;
+  const disconnectAction =
+    mode === 'feed' ? feedDisconnected : profileOrdersDisconnected;
+
+  // Функция для периодического обновления (только для ленты)
+  const setupPeriodicUpdate = useCallback((): (() => void) => {
+    if (mode !== 'feed' || !enablePeriodicUpdate) {
+      return (): void => {
+        // Ничего не делаем, если режим не "feed" или обновление отключено
+      };
+    }
+
+    // Очищаем предыдущий таймер
     if (updateTimerRef.current !== null) {
       window.clearInterval(updateTimerRef.current);
     }
 
-    // Устанавливаем периодическое обновление каждые 15 секунд
+    // Устанавливаем периодическое обновление
     updateTimerRef.current = window.setInterval(() => {
       console.log('🔄 Периодическое обновление ленты заказов');
-      // Переподключаемся, только если компонент все еще смонтирован
       if (isMountedRef.current) {
-        dispatch(feedConnect());
+        dispatch(connectAction());
       }
-    }, 15000); // 15 секунд
+    }, 15000);
 
     return (): void => {
       if (updateTimerRef.current !== null) {
@@ -60,27 +93,27 @@ const OrderCards = (): JSX.Element => {
         updateTimerRef.current = null;
       }
     };
-  }, [dispatch]);
+  }, [dispatch, connectAction, mode, enablePeriodicUpdate]);
 
-  // Подключаемся к WebSocket при монтировании компонента и настраиваем обновление
+  // Подключение при монтировании компонента
   useEffect(() => {
-    console.log('📣 Инициализация компонента OrderCards');
+    console.log(`📣 Инициализация компонента OrderCards (режим: ${mode})`);
     isMountedRef.current = true;
 
-    // Запускаем первичное подключение
-    dispatch(feedConnect());
+    // Запускаем подключение
+    dispatch(connectAction());
 
-    // Настраиваем периодическое обновление
+    // Настраиваем периодическое обновление если нужно
     const cleanup = setupPeriodicUpdate();
 
-    // Отключаемся при размонтировании компонента
+    // Отключаемся при размонтировании
     return (): void => {
-      console.log('🔌 Размонтирование компонента OrderCards');
+      console.log(`🔌 Размонтирование компонента OrderCards (режим: ${mode})`);
       isMountedRef.current = false;
-      dispatch(feedDisconnected());
+      dispatch(disconnectAction());
       cleanup();
     };
-  }, [dispatch, setupPeriodicUpdate]);
+  }, [dispatch, connectAction, disconnectAction, setupPeriodicUpdate, mode]);
 
   const handleCloseModal = useCallback((): void => {
     setModalState(false);
@@ -91,47 +124,57 @@ const OrderCards = (): JSX.Element => {
     (order: TOrder): void => {
       setCurrentItem(order);
       setModalState(true);
-      void navigate(`/feed/${order._id}`, {
+      const path =
+        mode === 'feed' ? `/feed/${order._id}` : `/profile/orders/${order._id}`;
+      void navigate(path, {
         state: { background: location },
       });
     },
-    [navigate, location]
+    [navigate, location, mode]
   );
 
   const handleRetryConnection = useCallback((): void => {
-    console.log('🔄 Попытка переподключения к ленте заказов...');
-    dispatch(feedDisconnected()); // Сначала отключаемся
+    console.log(`🔄 Попытка переподключения (режим: ${mode})...`);
+    dispatch(disconnectAction());
     setTimeout(() => {
-      dispatch(feedConnect()); // Затем подключаемся заново
+      dispatch(connectAction());
     }, 1000);
-  }, [dispatch]);
+  }, [dispatch, connectAction, disconnectAction, mode]);
 
-  // Мемоизируем список заказов для оптимизации и сортируем по дате создания (новые в начале)
-  const orderElements = useMemo(
-    () =>
-      [...orders] // Создаем копию массива для сортировки
-        .sort(
-          (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-        )
-        .map((order) => (
-          <OrderCard
-            key={order._id}
-            order={order}
-            ingredients={ingredients}
-            onClick={handleOrderClick}
-            showStatus={false}
-          />
-        )),
-    [orders, ingredients, handleOrderClick]
-  );
+  // Мемоизируем список заказов
+  const orderElements = useMemo(() => {
+    let sortedOrders = [...orders];
 
-  // Показываем состояние загрузки или ошибки
+    if (mode === 'feed') {
+      // Для ленты сортируем по дате создания (новые в начале)
+      sortedOrders = sortedOrders.sort(
+        (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
+    } else {
+      // Для профиля реверсируем (последние заказы вверху)
+      sortedOrders = sortedOrders.reverse();
+    }
+
+    return sortedOrders.map((order) => (
+      <OrderCard
+        key={order._id}
+        order={order}
+        ingredients={ingredients}
+        onClick={handleOrderClick}
+        showStatus={showStatus}
+      />
+    ));
+  }, [orders, ingredients, handleOrderClick, showStatus, mode]);
+
+  // Показываем ошибку
   if (error) {
     return (
       <div className={styles.container}>
         <div className={styles.errorState}>
           <div className="text text_type_main-medium mb-4">
-            Не удалось загрузить ленту заказов
+            {mode === 'feed'
+              ? 'Не удалось загрузить ленту заказов'
+              : 'Ошибка загрузки заказов'}
           </div>
           <div className="text text_type_main-default text_color_inactive mb-6">
             {error}
@@ -147,16 +190,14 @@ const OrderCards = (): JSX.Element => {
     );
   }
 
+  // Показываем загрузку
   if (!isConnected && orders.length === 0) {
     return (
       <div className={styles.container}>
-        <div className={styles.loadingState}>
-          <div className="text text_type_main-medium text_color_inactive">
-            Подключение к серверу...
-          </div>
-          <div className="text text_type_main-default text_color_inactive mt-2">
-            Загружаем актуальные заказы
-          </div>
+        <div className="text text_type_main-medium text_color_inactive">
+          {mode === 'feed'
+            ? 'Загрузка ленты заказов...'
+            : 'Подключение к серверу заказов...'}
         </div>
       </div>
     );
@@ -167,9 +208,18 @@ const OrderCards = (): JSX.Element => {
       <div className={styles.container}>
         {orders.length > 0 ? (
           orderElements
-        ) : (
-          <div className="text text_type_main-medium">Заказы не найдены</div>
-        )}
+        ) : isConnected ? (
+          <div className={styles.errorState}>
+            <div className="text text_type_main-medium text_color_inactive mb-2">
+              {mode === 'feed' ? 'Заказы не найдены' : 'У вас пока нет заказов'}
+            </div>
+            <div className="text text_type_main-default text_color_inactive">
+              {mode === 'feed'
+                ? 'Попробуйте обновить страницу'
+                : 'Перейдите на главную страницу, чтобы собрать свой первый бургер'}
+            </div>
+          </div>
+        ) : null}
       </div>
       {isModalOpen && currentItem && (
         <Modal onClose={handleCloseModal}>
