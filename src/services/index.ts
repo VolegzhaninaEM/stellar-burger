@@ -43,6 +43,14 @@ export {
   feedError,
   feedMessage,
 } from './feedSlice';
+export {
+  profileOrdersConnect,
+  profileOrdersConnected,
+  profileOrdersDisconnected,
+  profileOrdersError,
+  profileOrdersMessage,
+  clearProfileOrders,
+} from './profileOrdersSlice';
 
 // Экспорт селекторов
 export {
@@ -86,6 +94,12 @@ export {
   selectFeedIsConnected,
   selectFeedError,
 } from './feedSlice';
+
+export {
+  selectProfileOrders,
+  selectProfileOrdersIsConnected,
+  selectProfileOrdersError,
+} from './profileOrdersSlice';
 
 // Экспорт store
 export { store } from './store';

@@ -2,48 +2,73 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
-  width: 100%;
-  height: 100%;
-  max-height: calc(100vh - 180px); /* Высота экрана минус высота шапки и отступы */
-  padding: 0 8px;
-  padding-right: 16px; /* Дополнительный отступ справа для скроллбара */
+  max-height: 800px;
+  padding-right: 8px;
   overflow-y: auto;
 }
 
 /* Стили скроллбара для WebKit браузеров */
 
 .container::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
 }
 
 .container::-webkit-scrollbar-track {
-  margin: 8px 0;
-  background: #2f2f37;
+  background: transparent;
 }
 
 .container::-webkit-scrollbar-thumb {
-  width: 8px;
-  margin: 2px;
-  background: #8585ad;
-  border-radius: 4px;
+  background: #4c4cff;
+  border-radius: 3px;
 }
 
-.container::-webkit-scrollbar-track-piece:end {
-  margin-bottom: 52px;
-  background: #2f2f37;
+.container::-webkit-scrollbar-thumb:hover {
+  background: #4040d9;
 }
 
-.container::-webkit-scrollbar-track-piece:start {
-  margin-top: 8px;
-  background: #2f2f37;
+.errorState {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 300px;
+  padding: 40px 20px;
+  text-align: center;
+  background: rgb(76 76 255 / 5%);
+  border: 2px dashed #4c4cff;
+  border-radius: 16px;
 }
 
-/* Поддержка для Firefox */
+.loadingState {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 200px;
+  padding: 40px 20px;
+  text-align: center;
+}
 
-@supports (scrollbar-color: auto) {
-  .container {
-    scrollbar-color: #8585ad #2f2f37;
-    scrollbar-width: thin;
+/* Анимация для состояния загрузки */
+
+.loadingState::before {
+  width: 40px;
+  height: 40px;
+  margin-bottom: 16px;
+  border: 3px solid #4c4cff;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  content: '';
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
   }
 }
 

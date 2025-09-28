@@ -7,6 +7,8 @@ import feedReducer from './feedSlice';
 import ingredientDetailsReducer from './ingredientDetailsSlice';
 import ingredientsReducer from './ingredientsSlice';
 import orderReducer from './orderSlice';
+import { profileOrdersMiddleware } from './profileOrdersMiddleware';
+import profileOrdersReducer from './profileOrdersSlice';
 
 import type { Action, ThunkAction } from '@reduxjs/toolkit';
 
@@ -19,6 +21,7 @@ export const store = configureStore({
     order: orderReducer,
     auth: authReducer,
     feed: feedReducer,
+    profileOrders: profileOrdersReducer,
   },
   // Включаем DevTools только в development режиме
   devTools: process.env.NODE_ENV !== 'production',
@@ -29,7 +32,7 @@ export const store = configureStore({
         // Игнорируем определенные action types для несериализуемых данных
         ignoredActions: ['persist/PERSIST', 'persist/REHYDRATE'],
       },
-    }).concat(feedMiddleware),
+    }).concat(feedMiddleware, profileOrdersMiddleware),
 });
 
 // Типы для всего приложения

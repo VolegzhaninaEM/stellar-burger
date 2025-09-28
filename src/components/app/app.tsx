@@ -16,6 +16,10 @@ import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { fetchUser, refreshToken, setAuthChecked } from '../../services/authSlice.ts';
 import { useAppDispatch, useAppSelector } from '../../services/hooks';
 import { fetchIngredients } from '../../services/ingredientsSlice.ts';
+import {
+  clearProfileOrders,
+  profileOrdersDisconnected,
+} from '../../services/profileOrdersSlice.ts';
 import { AppHeader } from '@components/app-header/app-header.tsx';
 import IngredientDetails from '@components/ingredient-details/ingredient-details.tsx';
 import Modal from '@components/modal/modal.tsx';
@@ -78,6 +82,22 @@ export const App = (): JSX.Element => {
     };
 
     void checkAuth();
+  }, [dispatch]);
+
+  // Отключаемся от WebSocket заказов профиля при выходе из системы
+  useEffect(() => {
+    if (!isAuth && authChecked) {
+      dispatch(profileOrdersDisconnected());
+      dispatch(clearProfileOrders());
+    }
+  }, [isAuth, authChecked, dispatch]);
+
+  // Очищаем соединения при размонтировании компонента
+  useEffect(() => {
+    return (): void => {
+      dispatch(profileOrdersDisconnected());
+      dispatch(clearProfileOrders());
+    };
   }, [dispatch]);
 
   if (!authChecked) {
