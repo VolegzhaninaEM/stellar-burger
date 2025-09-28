@@ -13,7 +13,7 @@ import {
 import { memo, useEffect } from 'react';
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 
-import { fetchUser, refreshToken, setAuthChecked } from '../../services/authSlice.ts';
+import { setAuthChecked, initializeAuth } from '../../services/authSlice.ts';
 import { useAppDispatch, useAppSelector } from '../../services/hooks';
 import { fetchIngredients } from '../../services/ingredientsSlice.ts';
 import {
@@ -28,7 +28,6 @@ import { ProfileUpdateForm } from '@components/profile-update-form/profile-updat
 import { ProtectedResetRoute } from '@components/protected-reset-route/protected-reset-route.tsx';
 import { ProtectedRouteElement } from '@components/protected-route-element/protected-route-element.tsx';
 import { ROUTES } from '@utils/constants.ts';
-import { getCookie } from '@utils/cookies.ts';
 
 import type { RootState } from '@services/store.ts';
 import type { TIngredient, TLocationState } from '@utils/types.ts';
@@ -47,41 +46,23 @@ export const App = (): JSX.Element => {
   );
   const dispatch = useAppDispatch();
 
+  // Используем новую функцию инициализации авторизации
   useEffect(() => {
-    const fetchData = async (): Promise<void> => {
-      const accessToken = getCookie('accessToken');
-      if (accessToken) {
-        await dispatch(fetchUser());
-      }
-      await dispatch(fetchIngredients());
-    };
-
-    try {
-      void fetchData();
-    } catch (error) {
-      console.error(error);
-    }
-  }, [dispatch]);
-
-  useEffect(() => {
-    const checkAuth = async (): Promise<void> => {
-      const accessToken = getCookie('accessToken');
-      const hasRefreshToken = localStorage.getItem('refreshToken');
-
+    const initApp = async (): Promise<void> => {
       try {
-        if (accessToken) {
-          await dispatch(fetchUser());
-        } else if (hasRefreshToken) {
-          await dispatch(refreshToken());
-        }
-      } catch {
-        throw new Error('Проверка пользователя прошла с ошибкой');
-      } finally {
+        // Инициализируем авторизацию из сохраненных токенов
+        await dispatch(initializeAuth()).unwrap();
+
+        // Получаем ингредиенты независимо от статуса авторизации
+        await dispatch(fetchIngredients());
+      } catch (error) {
+        console.error('Ошибка при инициализации приложения:', error);
+        // Отмечаем проверку авторизации как завершенную в случае ошибки
         dispatch(setAuthChecked(true));
       }
     };
 
-    void checkAuth();
+    void initApp();
   }, [dispatch]);
 
   // Отключаемся от WebSocket заказов профиля при выходе из системы

@@ -1,4 +1,4 @@
-import type { TAuthResponse } from '@utils/types.ts';
+import type { TTokenResponse } from '@utils/types.ts';
 
 type CookieName = string;
 type CookieValue = string;
@@ -50,9 +50,28 @@ export function deleteCookie(name: CookieName): void {
   setCookie(name, '', { expires: new Date(0) });
 }
 
-export const saveTokens = ({ accessToken, refreshToken }: TAuthResponse): void => {
-  setCookie('accessToken', accessToken.split('Bearer ')[1]);
-  setCookie('refreshToken', refreshToken);
+// Токен доступа хранится 20 минут, рефреш токен - 30 дней
+const ACCESS_TOKEN_EXPIRY_TIME = 20 * 60; // 20 минут в секундах
+const REFRESH_TOKEN_EXPIRY_TIME = 30 * 24 * 60 * 60; // 30 дней в секундах
+
+// Обновляем тип, чтобы функция могла принимать как TAuthResponse, так и TTokenResponse
+export const saveTokens = ({ accessToken, refreshToken }: TTokenResponse): void => {
+  // Убираем префикс Bearer, если он есть
+  const cleanAccessToken = accessToken.replace(/^Bearer\s+/i, '').trim();
+
+  // Сохраняем токены в cookies с установленным временем жизни
+  setCookie('accessToken', cleanAccessToken, {
+    expires: ACCESS_TOKEN_EXPIRY_TIME,
+    path: '/',
+  });
+
+  setCookie('refreshToken', refreshToken, {
+    expires: REFRESH_TOKEN_EXPIRY_TIME,
+    path: '/',
+  });
+
+  // Для совместимости с текущей реализацией сохраняем также в localStorage
+  localStorage.setItem('refreshToken', refreshToken);
 };
 
 export const getTokens = (): {

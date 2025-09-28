@@ -76,7 +76,7 @@ const OrderCards = (): JSX.Element => {
           order={order}
           ingredients={ingredients}
           onClick={handleOrderClick}
-          showStatus={true}
+          showStatus={false}
         />
       )),
     [orders, ingredients, handleOrderClick]
