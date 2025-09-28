@@ -4,7 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "build": "vite build",
+    "build": "npm run clean:css-types && vite build",
+    "clean:css-types": "./clean-css-types.sh",
     "commit": "cz",
     "check": "stylelint && eslint src/",
     "cypress:open": "cypress open",
@@ -13,6 +14,7 @@
     "deploy": "gh-pages -d dist",
     "eslint": "eslint src/ --fix",
     "lint": "npm run stylelint && npm run eslint && npm run prettier",
+    "prebuild": "npm run clean:css-types",
     "predeploy": "npm run build",
     "prepare": "husky",
     "prettier": "prettier \"./src/**/*.{js,jsx,ts,tsx,json,html,css,md}\" --write",

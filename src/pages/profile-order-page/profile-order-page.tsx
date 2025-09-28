@@ -15,7 +15,7 @@ const ProfileOrderPage = (): JSX.Element => {
 
   // В реальном приложении здесь будет запрос к API за конкретным заказом пользователя
   // Пока используем мокированные данные
-  const mockOrder: TOrder | undefined = id
+  const mockOrder: TOrder | null = id
     ? {
         _id: id,
         ingredients: ['ingredient1', 'ingredient2', 'ingredient3'],
@@ -25,11 +25,19 @@ const ProfileOrderPage = (): JSX.Element => {
         updatedAt: '2025-09-27T10:30:00Z',
         number: parseInt('034536'),
       }
-    : undefined;
+    : null;
+
+  if (!mockOrder) {
+    return (
+      <div className={styles.container}>
+        <div className="text text_type_main-medium">Заказ не найден</div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.container}>
-      <OrderInfo order={mockOrder} ingredients={ingredients} showStatus={true} />
+      <OrderInfo order={mockOrder} ingredients={ingredients} />
     </div>
   );
 };

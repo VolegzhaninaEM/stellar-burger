@@ -1,202 +1,111 @@
-import { memo, useCallback } from 'react';
+import {
+  useAppDispatch,
+  useAppSelector,
+  feedConnect,
+  feedDisconnected,
+  selectFeedOrders,
+  selectFeedIsConnected,
+  selectFeedError,
+  selectIngredients,
+} from '@/services';
+import { memo, useCallback, useState, useMemo, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import OrderCard from '../order-card/order-card';
+import Modal from '@components/modal/modal';
+import OrderInfo from '@components/order-info/order-info';
 
-import type { TIngredient } from '../../utils/types';
 import type { TOrder } from '../order-card/order-card';
 import type { JSX } from 'react';
 
 import styles from './order-cards.module.css';
 
-// Временные типы для демонстрации
-type OrderStatus = 'done' | 'pending' | 'created';
-
-type MockOrder = {
-  id: string;
-  number: string;
-  name: string;
-  status: OrderStatus;
-  createdAt: string;
-  ingredients: string[];
-  price: number;
-};
-
 const OrderCards = (): JSX.Element => {
+  const [currentItem, setCurrentItem] = useState<TOrder | undefined>();
+  const [isModalOpen, setModalState] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
-  // Мокированные данные для демонстрации
-  const mockOrders: MockOrder[] = [
-    {
-      id: '1',
-      number: '034536',
-      name: 'Краторный бургер',
-      status: 'done',
-      createdAt: '2025-09-27T10:30:00Z',
-      ingredients: ['ingredient1', 'ingredient2', 'ingredient3'],
-      price: 1255,
-    },
-    {
-      id: '2',
-      number: '034535',
-      name: 'Флюоресцентный люминесцентный бургер',
-      status: 'pending',
-      createdAt: '2025-09-27T09:25:00Z',
-      ingredients: ['ingredient1', 'ingredient2', 'ingredient3', 'ingredient4'],
-      price: 988,
-    },
-    {
-      id: '3',
-      number: '034534',
-      name: 'Био-марсианский бургер',
-      status: 'created',
-      createdAt: '2025-09-27T08:15:00Z',
-      ingredients: ['ingredient1', 'ingredient2'],
-      price: 1644,
-    },
-    {
-      id: '4',
-      number: '034533',
-      name: 'Антарианский астро-бургер',
-      status: 'done',
-      createdAt: '2025-09-27T07:45:00Z',
-      ingredients: [
-        'ingredient1',
-        'ingredient2',
-        'ingredient3',
-        'ingredient4',
-        'ingredient5',
-      ],
-      price: 2100,
-    },
-    {
-      id: '5',
-      number: '034532',
-      name: 'Традиционный галактический бургер',
-      status: 'pending',
-      createdAt: '2025-09-27T07:20:00Z',
-      ingredients: ['ingredient1', 'ingredient2', 'ingredient3'],
-      price: 1455,
-    },
-    {
-      id: '6',
-      number: '034531',
-      name: 'Экзо-плазменный бургер',
-      status: 'created',
-      createdAt: '2025-09-27T06:55:00Z',
-      ingredients: [
-        'ingredient1',
-        'ingredient2',
-        'ingredient3',
-        'ingredient4',
-        'ingredient5',
-        'ingredient6',
-        'ingredient7',
-      ],
-      price: 1876,
-    },
-    {
-      id: '7',
-      number: '034530',
-      name: 'Метеоритный мега-бургер',
-      status: 'done',
-      createdAt: '2025-09-27T06:30:00Z',
-      ingredients: ['ingredient1', 'ingredient2'],
-      price: 999,
-    },
-    {
-      id: '8',
-      number: '034529',
-      name: 'Звездный деликатес',
-      status: 'pending',
-      createdAt: '2025-09-27T06:05:00Z',
-      ingredients: ['ingredient1', 'ingredient2', 'ingredient3', 'ingredient4'],
-      price: 1333,
-    },
-  ];
+  // Получаем данные из Redux store
+  const orders = useAppSelector(selectFeedOrders);
+  const ingredients = useAppSelector(selectIngredients);
+  const isConnected = useAppSelector(selectFeedIsConnected);
+  const error = useAppSelector(selectFeedError);
 
-  // Мокированные ингредиенты для демонстрации
-  const mockIngredients: TIngredient[] = [
-    {
-      _id: 'ingredient1',
-      name: 'Краторная булка N-200i',
-      type: 'bun',
-      proteins: 80,
-      fat: 24,
-      carbohydrates: 53,
-      calories: 420,
-      price: 1255,
-      image: 'https://code.s3.yandex.net/react/code/bun-02.png',
-      image_mobile: 'https://code.s3.yandex.net/react/code/bun-02-mobile.png',
-      image_large: 'https://code.s3.yandex.net/react/code/bun-02-large.png',
-      __v: 0,
-    },
-    {
-      _id: 'ingredient2',
-      name: 'Биокотлета из марсианской Магнолии',
-      type: 'main',
-      proteins: 420,
-      fat: 142,
-      carbohydrates: 242,
-      calories: 4242,
-      price: 424,
-      image: 'https://code.s3.yandex.net/react/code/meat-01.png',
-      image_mobile: 'https://code.s3.yandex.net/react/code/meat-01-mobile.png',
-      image_large: 'https://code.s3.yandex.net/react/code/meat-01-large.png',
-      __v: 0,
-    },
-    {
-      _id: 'ingredient3',
-      name: 'Соус Spicy-X',
-      type: 'sauce',
-      proteins: 30,
-      fat: 20,
-      carbohydrates: 40,
-      calories: 30,
-      price: 90,
-      image: 'https://code.s3.yandex.net/react/code/sauce-02.png',
-      image_mobile: 'https://code.s3.yandex.net/react/code/sauce-02-mobile.png',
-      image_large: 'https://code.s3.yandex.net/react/code/sauce-02-large.png',
-      __v: 0,
-    },
-  ];
+  // Подключаемся к WebSocket при монтировании компонента
+  useEffect(() => {
+    dispatch(feedConnect());
 
-  // Конвертируем MockOrder в TOrder
-  const convertToTOrder = (mockOrder: MockOrder): TOrder => ({
-    _id: mockOrder.id,
-    ingredients: mockOrder.ingredients,
-    status: mockOrder.status as TOrder['status'],
-    name: mockOrder.name,
-    createdAt: mockOrder.createdAt,
-    updatedAt: mockOrder.createdAt,
-    number: parseInt(mockOrder.number),
-  });
+    // Отключаемся при размонтировании компонента
+    return (): void => {
+      dispatch(feedDisconnected());
+    };
+  }, [dispatch]);
+
+  const handleCloseModal = useCallback((): void => {
+    setModalState(false);
+    setCurrentItem(undefined);
+  }, []);
 
   const handleOrderClick = useCallback(
     (order: TOrder): void => {
+      setCurrentItem(order);
+      setModalState(true);
       void navigate(`/feed/${order._id}`, {
-        state: { background: location.pathname },
+        state: { background: location },
       });
     },
     [navigate, location]
   );
 
+  // Мемоизируем список заказов для оптимизации
+  const orderElements = useMemo(
+    () =>
+      orders.map((order) => (
+        <OrderCard
+          key={order._id}
+          order={order}
+          ingredients={ingredients}
+          onClick={handleOrderClick}
+          showStatus={true}
+        />
+      )),
+    [orders, ingredients, handleOrderClick]
+  );
+
+  // Показываем состояние загрузки или ошибки
+  if (error) {
+    return (
+      <div className={styles.container}>
+        <div className="text text_type_main-medium">Ошибка подключения: {error}</div>
+      </div>
+    );
+  }
+
+  if (!isConnected && orders.length === 0) {
+    return (
+      <div className={styles.container}>
+        <div className="text text_type_main-medium">Подключение к серверу...</div>
+      </div>
+    );
+  }
+
   return (
-    <div className={styles.container}>
-      {mockOrders.map((order) => {
-        const tOrder = convertToTOrder(order);
-        return (
-          <OrderCard
-            key={order.id}
-            order={tOrder}
-            ingredients={mockIngredients}
-            onClick={handleOrderClick}
-            showStatus={true}
-          />
-        );
-      })}
-    </div>
+    <>
+      <div className={styles.container}>
+        {orders.length > 0 ? (
+          orderElements
+        ) : (
+          <div className="text text_type_main-medium">Заказы не найдены</div>
+        )}
+      </div>
+      {isModalOpen && currentItem && (
+        <Modal onClose={handleCloseModal}>
+          <OrderInfo order={currentItem} ingredients={ingredients} />
+        </Modal>
+      )}
+    </>
   );
 };
 

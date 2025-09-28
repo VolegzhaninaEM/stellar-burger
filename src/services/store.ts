@@ -2,6 +2,8 @@ import { configureStore } from '@reduxjs/toolkit';
 
 import authReducer from './authSlice';
 import constructorReducer from './constructorSlice';
+import { feedMiddleware } from './feedMiddleware';
+import feedReducer from './feedSlice';
 import ingredientDetailsReducer from './ingredientDetailsSlice';
 import ingredientsReducer from './ingredientsSlice';
 import orderReducer from './orderSlice';
@@ -16,6 +18,7 @@ export const store = configureStore({
     ingredientDetails: ingredientDetailsReducer,
     order: orderReducer,
     auth: authReducer,
+    feed: feedReducer,
   },
   // Включаем DevTools только в development режиме
   devTools: process.env.NODE_ENV !== 'production',
@@ -26,7 +29,7 @@ export const store = configureStore({
         // Игнорируем определенные action types для несериализуемых данных
         ignoredActions: ['persist/PERSIST', 'persist/REHYDRATE'],
       },
-    }),
+    }).concat(feedMiddleware),
 });
 
 // Типы для всего приложения

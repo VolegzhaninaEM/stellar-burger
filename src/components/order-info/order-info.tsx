@@ -4,6 +4,8 @@ import {
 } from '@krgaa/react-developer-burger-ui-components';
 import { memo, useMemo } from 'react';
 
+import { calculateOrderPrice, getOrderIngredients } from '../../utils/orderUtils';
+
 import type { TIngredient } from '../../utils/types';
 import type { TOrder } from '../order-card/order-card';
 import type { JSX } from 'react';
@@ -11,7 +13,7 @@ import type { JSX } from 'react';
 import styles from './order-info.module.css';
 
 type OrderInfoProps = {
-  order?: TOrder;
+  order: TOrder; // Убираю ? - делаю order обязательным
   ingredients: TIngredient[];
   showStatus?: boolean;
 };
@@ -21,34 +23,15 @@ const OrderInfo = ({
   ingredients,
   showStatus = true,
 }: OrderInfoProps): JSX.Element => {
-  // Получаем детали ингредиентов заказа
-  const orderIngredients = useMemo(() => {
-    if (!order) return [];
-    return order.ingredients
-      .map((id) => ingredients.find((ingredient) => ingredient._id === id))
-      .filter(Boolean) as TIngredient[];
-  }, [order?.ingredients, ingredients]);
-
-  // Подсчитываем общую стоимость заказа
+  // Подсчитываем общую стоимость заказа с учетом правил (булочки считаются дважды)
   const totalPrice = useMemo(() => {
-    return orderIngredients.reduce((sum, ingredient) => sum + ingredient.price, 0);
-  }, [orderIngredients]);
+    return calculateOrderPrice(order, ingredients);
+  }, [order, ingredients]);
 
   // Получаем уникальные ингредиенты с количеством
   const ingredientCounts = useMemo(() => {
-    const counts = new Map<string, { ingredient: TIngredient; count: number }>();
-
-    orderIngredients.forEach((ingredient) => {
-      const existing = counts.get(ingredient._id);
-      if (existing) {
-        existing.count += 1;
-      } else {
-        counts.set(ingredient._id, { ingredient, count: 1 });
-      }
-    });
-
-    return Array.from(counts.values());
-  }, [orderIngredients]);
+    return getOrderIngredients(order, ingredients);
+  }, [order, ingredients]);
 
   // Получаем статус заказа
   const getStatusText = (status: TOrder['status']): string => {
@@ -76,14 +59,6 @@ const OrderInfo = ({
         return '';
     }
   };
-
-  if (!order) {
-    return (
-      <div className={styles.container}>
-        <p className="text text_type_main-default">Заказ не найден</p>
-      </div>
-    );
-  }
 
   return (
     <div className={styles.container}>

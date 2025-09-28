@@ -16,7 +16,12 @@ export type {
 export { useAppDispatch, useAppSelector } from './hooks';
 
 // Экспорт действий
-export { createOrder, closeOrderModal, clearOrderError } from './orderSlice';
+export {
+  createOrder,
+  closeOrderModal,
+  setOrderNumber,
+  clearOrderError,
+} from './orderSlice';
 export {
   fetchIngredients,
   incrementCounter,
@@ -31,6 +36,13 @@ export {
   clearConstructor,
 } from './constructorSlice';
 export { setIngredient, clearIngredient } from './ingredientDetailsSlice';
+export {
+  feedConnect,
+  feedConnected,
+  feedDisconnected,
+  feedError,
+  feedMessage,
+} from './feedSlice';
 
 // Экспорт селекторов
 export {
@@ -66,6 +78,14 @@ export {
   selectIngredientDetailsName,
   selectIngredientDetailsNutrition,
 } from './ingredientDetailsSlice';
+
+export {
+  selectFeedOrders,
+  selectFeedTotal,
+  selectFeedTotalToday,
+  selectFeedIsConnected,
+  selectFeedError,
+} from './feedSlice';
 
 // Экспорт store
 export { store } from './store';

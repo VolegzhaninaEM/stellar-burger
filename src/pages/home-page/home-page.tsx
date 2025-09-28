@@ -11,7 +11,7 @@ import {
 import { closeOrderModal, createOrder } from '../../services/orderSlice.ts';
 import { BurgerConstructor } from '@components/burger-contructor/burger-constructor';
 import BurgerIngredients from '@components/burger-ingredients/burger-ingredients.tsx';
-import { Modal } from '@components/modal/modal.tsx';
+import Modal from '@components/modal/modal.tsx';
 import OrderDetails from '@components/order-details/order-details.tsx';
 import { ROUTES } from '@utils/constants.ts';
 

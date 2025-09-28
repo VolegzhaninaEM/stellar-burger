@@ -4,6 +4,8 @@ import {
 } from '@krgaa/react-developer-burger-ui-components';
 import { memo, useMemo } from 'react';
 
+import { calculateOrderPrice } from '../../utils/orderUtils';
+
 import type { TIngredient } from '../../utils/types';
 import type { JSX } from 'react';
 
@@ -18,7 +20,7 @@ export type TOrder = {
   status: TOrderStatus;
   name: string;
   createdAt: string;
-  updatedAt: string;
+  updatedAt?: string;
   number: number;
 };
 
@@ -42,10 +44,10 @@ const OrderCard = ({
       .filter(Boolean) as TIngredient[];
   }, [order.ingredients, ingredients]);
 
-  // Подсчитываем общую стоимость заказа
+  // Подсчитываем общую стоимость заказа с учетом правил (булочки считаются дважды)
   const totalPrice = useMemo(() => {
-    return orderIngredients.reduce((sum, ingredient) => sum + ingredient.price, 0);
-  }, [orderIngredients]);
+    return calculateOrderPrice(order, ingredients);
+  }, [order, ingredients]);
 
   // Получаем уникальные ингредиенты для отображения
   const uniqueIngredients = useMemo(() => {

@@ -18,8 +18,7 @@ import { useAppDispatch, useAppSelector } from '../../services/hooks';
 import { fetchIngredients } from '../../services/ingredientsSlice.ts';
 import { AppHeader } from '@components/app-header/app-header.tsx';
 import IngredientDetails from '@components/ingredient-details/ingredient-details.tsx';
-import { Modal } from '@components/modal/modal.tsx';
-import OrderInfo from '@components/order-info/order-info.tsx';
+import Modal from '@components/modal/modal.tsx';
 import { ProfileOrders } from '@components/profile-orders/profile-orders.tsx';
 import { ProfileUpdateForm } from '@components/profile-update-form/profile-update-form.tsx';
 import { ProtectedResetRoute } from '@components/protected-reset-route/protected-reset-route.tsx';
@@ -140,11 +139,12 @@ export const App = (): JSX.Element => {
               </Modal>
             }
           />
-          <Route
+          {/* TODO: Реализовать получение заказа по ID из URL параметров */}
+          {/* <Route
             path={ROUTES.FEED}
             element={
               <Modal onClose={() => window.history.back()}>
-                <OrderInfo ingredients={ingredients} />
+                <OrderInfo order={null} ingredients={ingredients} />
               </Modal>
             }
           />
@@ -152,10 +152,10 @@ export const App = (): JSX.Element => {
             path={ROUTES.PROFILE_ORDER}
             element={
               <Modal onClose={() => window.history.back()}>
-                <OrderInfo ingredients={ingredients} />
+                <OrderInfo order={null} ingredients={ingredients} />
               </Modal>
             }
-          />
+          /> */}
         </Routes>
       )}
     </>

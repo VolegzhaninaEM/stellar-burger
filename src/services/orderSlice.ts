@@ -52,6 +52,9 @@ const orderSlice = createSlice({
     clearOrderError: (state) => {
       state.error = null;
     },
+    setOrderNumber: (state, action: PayloadAction<number | null>) => {
+      state.number = action.payload;
+    },
   },
   extraReducers: (builder) =>
     builder
@@ -70,7 +73,7 @@ const orderSlice = createSlice({
       }),
 });
 
-export const { closeOrderModal, clearOrderError } = orderSlice.actions;
+export const { closeOrderModal, setOrderNumber, clearOrderError } = orderSlice.actions;
 export default orderSlice.reducer;
 
 // Селекторы с типизацией
