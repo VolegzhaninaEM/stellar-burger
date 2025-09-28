@@ -23,7 +23,7 @@ import {
 import { AppHeader } from '@components/app-header/app-header.tsx';
 import IngredientDetails from '@components/ingredient-details/ingredient-details.tsx';
 import Modal from '@components/modal/modal.tsx';
-import { ProfileOrders } from '@components/profile-orders/profile-orders.tsx';
+import ProfileOrders from '@components/profile-orders/profile-orders.tsx';
 import { ProfileUpdateForm } from '@components/profile-update-form/profile-update-form.tsx';
 import { ProtectedResetRoute } from '@components/protected-reset-route/protected-reset-route.tsx';
 import { ProtectedRouteElement } from '@components/protected-route-element/protected-route-element.tsx';

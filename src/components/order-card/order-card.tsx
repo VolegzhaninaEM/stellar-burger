@@ -29,6 +29,7 @@ type OrderCardProps = {
   ingredients: TIngredient[];
   onClick?: (order: TOrder) => void;
   showStatus?: boolean;
+  extraClassName?: string;
 };
 
 const OrderCard = ({
@@ -36,6 +37,7 @@ const OrderCard = ({
   ingredients,
   onClick,
   showStatus = true,
+  extraClassName = '',
 }: OrderCardProps): JSX.Element => {
   // Получаем детали ингредиентов заказа
   const orderIngredients = useMemo(() => {
@@ -122,7 +124,7 @@ const OrderCard = ({
   const hiddenCount = uniqueIngredients.length - 6;
 
   return (
-    <section className={styles.container} onClick={handleClick}>
+    <section className={`${styles.container} ${extraClassName}`} onClick={handleClick}>
       <div className={styles.header}>
         <p className="text text_type_digits-default">#{order.number}</p>
         <FormattedDate

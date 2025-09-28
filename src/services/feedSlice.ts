@@ -45,6 +45,7 @@ const feedSlice = createSlice({
       state.isConnected = false;
     },
     feedMessage: (state, action: PayloadAction<FeedData>) => {
+      console.log('📦 Получены заказы ленты:', action.payload);
       const { orders, total, totalToday } = action.payload;
       state.orders = orders;
       state.total = total;

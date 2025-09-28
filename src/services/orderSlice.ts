@@ -1,6 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
 import { request } from '../utils/api';
+import { getCookie } from '../utils/cookies';
 
 import type { LoadingStatus, OrderState } from '../../src/utils/types';
 import type { PayloadAction } from '@reduxjs/toolkit';
@@ -40,6 +41,29 @@ export const createOrder = createAsyncThunk<
   }
 });
 
+export const fetchOrders = createAsyncThunk<
+  OrderResponse,
+  void,
+  {
+    rejectValue: string;
+  }
+>('orders/fetch', async (_, { rejectWithValue }) => {
+  try {
+    // Получаем токен авторизации из cookies
+    const accessToken = getCookie('accessToken');
+
+    if (!accessToken) {
+      return rejectWithValue('Требуется авторизация для просмотра заказов');
+    }
+
+    return await request<OrderResponse>('/orders', 'GET', undefined, accessToken);
+  } catch (error) {
+    const errorMessage =
+      error instanceof Error ? error.message : 'Ошибка загрузки заказов';
+    return rejectWithValue(errorMessage);
+  }
+});
+
 const orderSlice = createSlice({
   name: 'order',
   initialState,
@@ -70,6 +94,23 @@ const orderSlice = createSlice({
       .addCase(createOrder.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload ?? action.error.message ?? 'Ошибка создания заказа';
+      })
+      .addCase(fetchOrders.pending, (state) => {
+        state.status = 'loading';
+        state.error = null;
+      })
+      .addCase(
+        fetchOrders.fulfilled,
+        (state, { payload }: PayloadAction<OrderResponse>) => {
+          state.number = payload.order.number;
+          state.status = 'succeeded';
+          state.error = null;
+        }
+      )
+      .addCase(fetchOrders.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error =
+          action.payload ?? action.error.message ?? 'Ошибка загрузки заказов';
       }),
 });
 

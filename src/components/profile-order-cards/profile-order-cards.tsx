@@ -1,15 +1,11 @@
 import {
-  useAppDispatch,
   useAppSelector,
-  profileOrdersConnect,
-  profileOrdersDisconnected,
-  clearProfileOrders,
   selectProfileOrders,
   selectProfileOrdersIsConnected,
   selectProfileOrdersError,
   selectIngredients,
 } from '@/services';
-import { memo, useCallback, useState, useMemo, useEffect } from 'react';
+import { memo, useCallback, useState, useMemo } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import OrderCard from '../order-card/order-card';
@@ -26,7 +22,6 @@ const ProfileOrderCards = (): JSX.Element => {
   const [isModalOpen, setModalState] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  const dispatch = useAppDispatch();
 
   // Получаем данные из Redux store для профиля
   const orders = useAppSelector(selectProfileOrders);
@@ -34,22 +29,14 @@ const ProfileOrderCards = (): JSX.Element => {
   const isConnected = useAppSelector(selectProfileOrdersIsConnected);
   const error = useAppSelector(selectProfileOrdersError);
 
-  // Подключаемся к WebSocket при монтировании компонента, только если не подключены
-  useEffect(() => {
-    if (!isConnected) {
-      console.log('🔄 Подключение к WebSocket для профиля заказов (не был подключен)');
-      dispatch(profileOrdersConnect());
-    } else {
-      console.log('✅ WebSocket для профиля заказов уже подключен');
-    }
-
-    // Отключаемся при размонтировании компонента
-    return (): void => {
-      console.log('🔌 Отключение WebSocket при размонтировании ProfileOrderCards');
-      dispatch(profileOrdersDisconnected());
-      dispatch(clearProfileOrders());
-    };
-  }, [dispatch, isConnected]);
+  // Добавляем детальное логирование для отладки
+  console.log('📊 ProfileOrderCards состояние:', {
+    ordersCount: orders.length,
+    isConnected,
+    hasError: !!error,
+    errorMessage: error,
+    ingredientsCount: ingredients.length,
+  });
 
   const handleCloseModal = useCallback((): void => {
     setModalState(false);
@@ -67,22 +54,22 @@ const ProfileOrderCards = (): JSX.Element => {
     [navigate, location]
   );
 
-  // Мемоизируем список заказов для оптимизации
-  const orderElements = useMemo(
-    () =>
-      orders.map((order) => (
-        <OrderCard
-          key={order._id}
-          order={order}
-          ingredients={ingredients}
-          onClick={handleOrderClick}
-          showStatus={true}
-        />
-      )),
-    [orders, ingredients, handleOrderClick]
-  );
+  // Мемоизируем список заказов с реверсом (последние заказы вверху, как в примере)
+  const orderElements = useMemo(() => {
+    const reversedOrders = [...orders].reverse();
+    return reversedOrders.map((order) => (
+      <OrderCard
+        key={order._id}
+        order={order}
+        ingredients={ingredients}
+        onClick={handleOrderClick}
+        showStatus={true}
+        extraClassName="mb-4"
+      />
+    ));
+  }, [orders, ingredients, handleOrderClick]);
 
-  // Показываем состояние загрузки или ошибки
+  // Показываем ошибку
   if (error) {
     return (
       <div className={styles.container}>
@@ -94,11 +81,12 @@ const ProfileOrderCards = (): JSX.Element => {
     );
   }
 
+  // Показываем загрузку только если не подключены и нет заказов
   if (!isConnected && orders.length === 0) {
     return (
       <div className={styles.container}>
         <div className="text text_type_main-medium text_color_inactive">
-          Загрузка ваших заказов...
+          Подключение к серверу заказов...
         </div>
       </div>
     );
@@ -106,20 +94,22 @@ const ProfileOrderCards = (): JSX.Element => {
 
   return (
     <>
-      <div className={styles.container}>
-        {orders.length > 0 ? (
-          orderElements
-        ) : isConnected ? (
-          <div className={styles.emptyState}>
-            <div className="text text_type_main-medium text_color_inactive mb-2">
-              У вас пока нет заказов
+      <section className={`${styles.container} pt-5`}>
+        <div>
+          {orders.length > 0 ? (
+            orderElements
+          ) : isConnected ? (
+            <div className={styles.emptyState}>
+              <div className="text text_type_main-medium text_color_inactive mb-2">
+                У вас пока нет заказов
+              </div>
+              <div className="text text_type_main-default text_color_inactive">
+                Перейдите на главную страницу, чтобы собрать свой первый бургер
+              </div>
             </div>
-            <div className="text text_type_main-default text_color_inactive">
-              Перейдите на главную страницу, чтобы собрать свой первый бургер
-            </div>
-          </div>
-        ) : null}
-      </div>
+          ) : null}
+        </div>
+      </section>
       {isModalOpen && currentItem && (
         <Modal onClose={handleCloseModal}>
           <OrderInfo order={currentItem} ingredients={ingredients} />
