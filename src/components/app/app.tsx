@@ -8,7 +8,6 @@ import {
   ResetPassword,
   FeedsPage,
   FeedOrderPage,
-  ProfileOrderPage,
 } from '@/pages';
 import { memo, useEffect } from 'react';
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
@@ -104,7 +103,7 @@ export const App = (): JSX.Element => {
         >
           <Route path={ROUTES.PROFILE} element={<ProfileUpdateForm />} />
           <Route path={ROUTES.PROFILE_ORDERS} element={<ProfileOrders />} />
-          <Route path={ROUTES.PROFILE_ORDER} element={<ProfileOrderPage />} />
+          <Route path={ROUTES.PROFILE_ORDER} element={<FeedOrderPage />} />
         </Route>
         <Route path={ROUTES.INGREDIENTS} element={<IngredientPage />} />
         <Route path={ROUTES.REGISTER} element={<RegisterPage />} />
@@ -126,7 +125,7 @@ export const App = (): JSX.Element => {
         />
         <Route
           path={ROUTES.PROFILE_ORDER}
-          element={<ProtectedRouteElement element={<ProfileOrderPage />} />}
+          element={<ProtectedRouteElement element={<FeedOrderPage />} />}
         />
       </Routes>
 
@@ -140,23 +139,6 @@ export const App = (): JSX.Element => {
               </Modal>
             }
           />
-          {/* TODO: Реализовать получение заказа по ID из URL параметров */}
-          {/* <Route
-            path={ROUTES.FEED}
-            element={
-              <Modal onClose={() => window.history.back()}>
-                <OrderInfo order={null} ingredients={ingredients} />
-              </Modal>
-            }
-          />
-          <Route
-            path={ROUTES.PROFILE_ORDER}
-            element={
-              <Modal onClose={() => window.history.back()}>
-                <OrderInfo order={null} ingredients={ingredients} />
-              </Modal>
-            }
-          /> */}
         </Routes>
       )}
     </>
