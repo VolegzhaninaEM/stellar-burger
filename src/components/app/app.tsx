@@ -15,10 +15,7 @@ import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { setAuthChecked, initializeAuth } from '../../services/authSlice.ts';
 import { useAppDispatch, useAppSelector } from '../../services/hooks';
 import { fetchIngredients } from '../../services/ingredientsSlice.ts';
-import {
-  clearProfileOrders,
-  profileOrdersDisconnect,
-} from '../../services/profileOrdersSlice.ts';
+import { clearProfileOrders } from '../../services/profileOrdersSlice.ts';
 import { AppHeader } from '@components/app-header/app-header.tsx';
 import IngredientDetails from '@components/ingredient-details/ingredient-details.tsx';
 import Modal from '@components/modal/modal.tsx';
@@ -29,7 +26,6 @@ import { ProtectedResetRoute } from '@components/protected-reset-route/protected
 import { ProtectedRouteElement } from '@components/protected-route-element/protected-route-element.tsx';
 import { ROUTES } from '@utils/constants.ts';
 
-import type { RootState } from '@services/store.ts';
 import type { TIngredient, TLocationState } from '@utils/types.ts';
 import type { JSX } from 'react';
 
@@ -37,8 +33,8 @@ export const App = (): JSX.Element => {
   const location = useLocation();
   const state = location.state as TLocationState;
   const background = state?.background ?? location;
-  const isAuth = useAppSelector((s: RootState) => s.auth.accessToken);
-  const authChecked = useAppSelector((s: RootState) => s.auth.authChecked);
+  const isAuth = useAppSelector((s) => s.auth.accessToken);
+  const authChecked = useAppSelector((s) => s.auth.authChecked);
   const from: string = (location.state as { from?: string })?.from ?? ROUTES.HOME;
   const ingredients: TIngredient[] = useAppSelector((s) => s.ingredients.items);
   const ingredient: TIngredient | undefined = ingredients.find(
@@ -94,7 +90,6 @@ export const App = (): JSX.Element => {
   // Отключаемся от WebSocket заказов профиля при выходе из системы
   useEffect(() => {
     if (!isAuth && authChecked) {
-      dispatch(profileOrdersDisconnect());
       dispatch(clearProfileOrders());
     }
   }, [isAuth, authChecked, dispatch]);
@@ -102,7 +97,6 @@ export const App = (): JSX.Element => {
   // Очищаем соединения при размонтировании компонента
   useEffect(() => {
     return (): void => {
-      dispatch(profileOrdersDisconnect());
       dispatch(clearProfileOrders());
     };
   }, [dispatch]);
