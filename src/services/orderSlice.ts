@@ -28,10 +28,18 @@ export const createOrder = createAsyncThunk<
   }
 >('order/create', async (ingredients: string[], { rejectWithValue }) => {
   try {
+    // Получаем свежий токен из cookies
+    const accessToken = getCookie('accessToken');
+
+    if (!accessToken) {
+      return rejectWithValue('Требуется авторизация для создания заказа');
+    }
+
     const response = await request<OrderResponse>(
       '/orders',
       'POST',
-      JSON.stringify({ ingredients })
+      JSON.stringify({ ingredients }),
+      accessToken // передаем токен в заголовке Authorization
     );
     return response.order.number;
   } catch (error) {

@@ -27,6 +27,8 @@ const HomePage = (): JSX.Element => {
   const location = useLocation();
   const isAuth = useAppSelector((s) => s.auth.accessToken);
   const orderNumber = useAppSelector((s) => s.order.number);
+  const orderStatus = useAppSelector((s) => s.order.status);
+  const orderError = useAppSelector((s) => s.order.error);
 
   const handleIngredientClick = useCallback(
     (ingredientItem: TIngredient) => {
@@ -35,7 +37,7 @@ const HomePage = (): JSX.Element => {
         state: { background: location },
       });
     },
-    [dispatch, location]
+    [dispatch, location, navigate]
   );
   const { buns, ingredients } = useAppSelector((s) => s.burgerConstructor);
   const handleOrderButtonClick = useCallback(() => {
@@ -44,13 +46,15 @@ const HomePage = (): JSX.Element => {
       return;
     }
     if (!buns) return;
+
     const ids: string[] = [
       buns._id,
       ...ingredients.map((i: TIngredient): string => i._id),
       buns._id,
     ];
+
     void dispatch(createOrder(ids));
-  }, [dispatch, buns, ingredients]);
+  }, [dispatch, buns, ingredients, isAuth, navigate]);
 
   const closeModal = useCallback(() => {
     dispatch(clearIngredient());
@@ -76,9 +80,13 @@ const HomePage = (): JSX.Element => {
             />
           </main>
         </DndProvider>
-        {orderNumber !== null && (
+        {(orderNumber !== null || orderStatus === 'loading' || orderError) && (
           <Modal onClose={closeModal}>
-            <OrderDetails orderNumber={orderNumber} />
+            <OrderDetails
+              orderNumber={orderNumber}
+              status={orderStatus}
+              error={orderError}
+            />
           </Modal>
         )}
       </div>
