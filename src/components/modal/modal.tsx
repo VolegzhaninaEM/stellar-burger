@@ -31,7 +31,7 @@ const Modal: FC<TModalProps> = ({
     return (): void => document.removeEventListener('keydown', handleEscape);
   }, [onClose]);
 
-  const modalRoot = document.getElementById('app');
+  const modalRoot = document.getElementById('modal-root');
 
   if (!mounted || !modalRoot) {
     return null;

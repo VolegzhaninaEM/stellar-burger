@@ -63,7 +63,7 @@ const HomePage = (): JSX.Element => {
 
   return (
     <>
-      <div className={styles.app} id="app">
+      <div className={styles.app}>
         <h1 className={`${styles.title} text text_type_main-large mt-10 mb-5 pl-5`}>
           Соберите бургер
         </h1>

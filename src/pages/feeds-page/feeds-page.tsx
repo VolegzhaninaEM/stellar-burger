@@ -18,7 +18,7 @@ const Feeds = (): JSX.Element => {
   }, [dispatch]);
 
   return (
-    <div className={feedsStyles.container} id="app">
+    <div className={feedsStyles.container}>
       <h1 className={`${feedsStyles.title} text text_type_main-large`}>Лента заказов</h1>
 
       <div className={feedsStyles.feedsWrapper}>

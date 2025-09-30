@@ -9,7 +9,7 @@ import {
   FeedsPage,
   FeedOrderPage,
 } from '@/pages';
-import { memo, useEffect } from 'react';
+import { memo, useEffect, useMemo } from 'react';
 import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 
 import { setAuthChecked, initializeAuth } from '../../services/authSlice.ts';
@@ -22,6 +22,7 @@ import {
 import { AppHeader } from '@components/app-header/app-header.tsx';
 import IngredientDetails from '@components/ingredient-details/ingredient-details.tsx';
 import Modal from '@components/modal/modal.tsx';
+import OrderInfo from '@components/order-info/order-info.tsx';
 import ProfileOrders from '@components/profile-orders/profile-orders.tsx';
 import { ProfileUpdateForm } from '@components/profile-update-form/profile-update-form.tsx';
 import { ProtectedResetRoute } from '@components/protected-reset-route/protected-reset-route.tsx';
@@ -43,6 +44,32 @@ export const App = (): JSX.Element => {
   const ingredient: TIngredient | undefined = ingredients.find(
     (i) => i._id === location.pathname.split('/').pop()
   );
+
+  // Получаем заказы из разных источников для модальных окон
+  const feedOrders = useAppSelector((s) => s.feed.orders);
+  const profileOrders = useAppSelector((s) => s.profileOrders.orders);
+
+  // Определяем текущий заказ для модального окна
+  const orderId = location.pathname.split('/').pop();
+  const currentOrder = useMemo(() => {
+    // Определяем, где искать заказ в зависимости от URL
+    if (location.pathname.startsWith('/profile/orders/')) {
+      // Для заказов профиля ищем только в профиле
+      const profileOrder = profileOrders.find((order) => order._id === orderId);
+      if (profileOrder) {
+        return profileOrder;
+      }
+    } else if (location.pathname.startsWith('/feed/')) {
+      // Для заказов ленты ищем только в ленте
+      const feedOrder = feedOrders.find((order) => order._id === orderId);
+      if (feedOrder) {
+        return feedOrder;
+      }
+    }
+
+    return undefined;
+  }, [feedOrders, profileOrders, orderId, location.pathname, state?.background]);
+
   const dispatch = useAppDispatch();
 
   // Используем новую функцию инициализации авторизации
@@ -116,10 +143,7 @@ export const App = (): JSX.Element => {
           }
         />
         <Route path={ROUTES.FEEDS} element={<FeedsPage />} />
-        <Route
-          path={ROUTES.FEED}
-          element={<ProtectedRouteElement element={<FeedOrderPage />} />}
-        />
+        <Route path={ROUTES.FEED} element={<FeedOrderPage />} />
         <Route
           path={ROUTES.PROFILE_ORDER}
           element={<ProtectedRouteElement element={<FeedOrderPage />} />}
@@ -127,16 +151,53 @@ export const App = (): JSX.Element => {
       </Routes>
 
       {state?.background !== undefined && (
-        <Routes>
-          <Route
-            path={ROUTES.INGREDIENTS}
-            element={
-              <Modal onClose={() => window.history.back()}>
-                <IngredientDetails card={ingredient} />
-              </Modal>
-            }
-          />
-        </Routes>
+        <>
+          {/* Модальное окно для ингредиентов */}
+          {location.pathname.startsWith('/ingredients/') && (
+            <Modal onClose={() => window.history.back()}>
+              <IngredientDetails card={ingredient} />
+            </Modal>
+          )}
+
+          {/* Модальное окно для заказов из ленты */}
+          {location.pathname.startsWith('/feed/') &&
+            !location.pathname.includes('/profile') && (
+              <>
+                <Modal onClose={() => window.history.back()}>
+                  {currentOrder ? (
+                    <OrderInfo
+                      order={currentOrder}
+                      ingredients={ingredients}
+                      showStatus={true}
+                    />
+                  ) : (
+                    <div>Заказ не найден</div>
+                  )}
+                </Modal>
+              </>
+            )}
+
+          {/* Модальное окно для заказов из профиля */}
+          {location.pathname.startsWith('/profile/orders/') && (
+            <>
+              {isAuth ? (
+                <Modal onClose={() => window.history.back()}>
+                  {currentOrder ? (
+                    <OrderInfo
+                      order={currentOrder}
+                      ingredients={ingredients}
+                      showStatus={true}
+                    />
+                  ) : (
+                    <div>Заказ не найден</div>
+                  )}
+                </Modal>
+              ) : (
+                <Navigate to={ROUTES.LOGIN} replace />
+              )}
+            </>
+          )}
+        </>
       )}
     </>
   );

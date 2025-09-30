@@ -13,12 +13,10 @@ import {
   selectProfileOrdersIsConnected,
   selectProfileOrdersError,
 } from '@/services';
-import { memo, useCallback, useState, useMemo, useEffect, useRef } from 'react';
+import { memo, useCallback, useMemo, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import OrderCard from '../order-card/order-card';
-import Modal from '@components/modal/modal';
-import OrderInfo from '@components/order-info/order-info';
 
 import type { TOrder } from '../order-card/order-card';
 import type { JSX } from 'react';
@@ -39,8 +37,6 @@ const OrderCards = ({
   showStatus = false,
   enablePeriodicUpdate = false,
 }: OrderCardsProps): JSX.Element => {
-  const [currentItem, setCurrentItem] = useState<TOrder | undefined>();
-  const [isModalOpen, setModalState] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useAppDispatch();
@@ -115,17 +111,11 @@ const OrderCards = ({
     };
   }, [dispatch, connectAction, disconnectAction, setupPeriodicUpdate, mode]);
 
-  const handleCloseModal = useCallback((): void => {
-    setModalState(false);
-    setCurrentItem(undefined);
-  }, []);
-
   const handleOrderClick = useCallback(
     (order: TOrder): void => {
-      setCurrentItem(order);
-      setModalState(true);
       const path =
         mode === 'feed' ? `/feed/${order._id}` : `/profile/orders/${order._id}`;
+
       void navigate(path, {
         state: { background: location },
       });
@@ -221,11 +211,6 @@ const OrderCards = ({
           </div>
         ) : null}
       </div>
-      {isModalOpen && currentItem && (
-        <Modal onClose={handleCloseModal}>
-          <OrderInfo order={currentItem} ingredients={ingredients} />
-        </Modal>
-      )}
     </>
   );
 };
