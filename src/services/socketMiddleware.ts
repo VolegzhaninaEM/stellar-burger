@@ -6,12 +6,12 @@ import type {
 } from '@reduxjs/toolkit';
 
 // Типы для конфигурации WebSocket middleware
-export type SocketActions = {
+export type SocketActions<TMessagePayload = unknown> = {
   connect: ActionCreatorWithPayload<{ url: string; token?: string }>;
   connected: ActionCreatorWithoutPayload;
   disconnect: ActionCreatorWithoutPayload;
   disconnected: ActionCreatorWithoutPayload;
-  message: ActionCreatorWithPayload<unknown>;
+  message: ActionCreatorWithPayload<TMessagePayload>;
   error: ActionCreatorWithPayload<string>;
 };
 
@@ -28,7 +28,9 @@ type WebSocketResponse = {
 };
 
 // Универсальная функция создания WebSocket middleware
-export const createSocketMiddleware = (actions: SocketActions): Middleware => {
+export const createSocketMiddleware = <TMessagePayload = unknown>(
+  actions: SocketActions<TMessagePayload>
+): Middleware => {
   // Хранилище соединений для каждого типа middleware
   const connections = new Map<string, SocketConnection>();
 
@@ -107,7 +109,7 @@ export const createSocketMiddleware = (actions: SocketActions): Middleware => {
             console.log(`📦 Получены данные от WebSocket: ${url}`, data);
 
             if (data.success) {
-              dispatch(actions.message(data));
+              dispatch(actions.message(data as TMessagePayload));
             } else {
               dispatch(actions.error(data.message ?? 'Сервер вернул ошибку'));
             }

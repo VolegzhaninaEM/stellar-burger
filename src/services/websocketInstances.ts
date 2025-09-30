@@ -5,6 +5,7 @@ import {
   feedDisconnected,
   feedError,
   feedMessage,
+  type FeedData,
 } from './feedSlice';
 import {
   profileOrdersConnect,
@@ -13,11 +14,12 @@ import {
   profileOrdersDisconnected,
   profileOrdersError,
   profileOrdersMessage,
+  type ProfileOrdersData,
 } from './profileOrdersSlice';
 import { createSocketMiddleware } from './socketMiddleware';
 
-// Создаем middleware для ленты заказов
-export const feedSocketMiddleware = createSocketMiddleware({
+// Создаем middleware для ленты заказов с типизацией FeedData
+export const feedSocketMiddleware = createSocketMiddleware<FeedData>({
   connect: feedConnect,
   connected: feedConnected,
   disconnect: feedDisconnect,
@@ -26,8 +28,8 @@ export const feedSocketMiddleware = createSocketMiddleware({
   error: feedError,
 });
 
-// Создаем middleware для заказов профиля
-export const profileOrdersSocketMiddleware = createSocketMiddleware({
+// Создаем middleware для заказов профиля с типизацией ProfileOrdersData
+export const profileOrdersSocketMiddleware = createSocketMiddleware<ProfileOrdersData>({
   connect: profileOrdersConnect,
   connected: profileOrdersConnected,
   disconnect: profileOrdersDisconnect,
