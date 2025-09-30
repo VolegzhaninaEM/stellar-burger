@@ -115,10 +115,7 @@ export const App = (): JSX.Element => {
             />
           }
         />
-        <Route
-          path={ROUTES.FEEDS}
-          element={<ProtectedRouteElement element={<FeedsPage />} />}
-        />
+        <Route path={ROUTES.FEEDS} element={<FeedsPage />} />
         <Route
           path={ROUTES.FEED}
           element={<ProtectedRouteElement element={<FeedOrderPage />} />}
