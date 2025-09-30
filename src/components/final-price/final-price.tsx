@@ -1,16 +1,17 @@
 import { Button, CurrencyIcon } from '@krgaa/react-developer-burger-ui-components';
 import { useMemo } from 'react';
 
-import type { TIngredient } from '@utils/types.ts';
+import type { TConstructorIngredient } from '@utils/types.ts';
 import type { JSX } from 'react';
 
 import styles from './final-price.module.css';
 
 type TPriceData = {
-  ingredients: TIngredient[];
-  buns: TIngredient;
+  ingredients: TConstructorIngredient[];
+  buns: TConstructorIngredient | null;
   handleOrderButtonClick: () => void;
   caption: string;
+  hasBuns: boolean;
 };
 
 const FinalPrice = ({
@@ -18,14 +19,16 @@ const FinalPrice = ({
   buns,
   handleOrderButtonClick,
   caption,
+  hasBuns,
 }: TPriceData): JSX.Element => {
   const totalPrice = useMemo(() => {
-    if (!ingredients) return buns ? buns.price * 2 : 0;
+    if (!ingredients || !buns) return buns ? buns.price * 2 : 0;
     const ingredientsPrice = ingredients.reduce((sum, item) => {
       return sum + item.price;
     }, 0);
     return ingredientsPrice + buns.price * 2;
   }, [ingredients, buns]);
+
   return (
     <div className={`${styles.burger_currency} ${styles.burger_price}`}>
       <div className={styles.burger_currency}>
@@ -37,6 +40,7 @@ const FinalPrice = ({
         type="primary"
         size="medium"
         onClick={handleOrderButtonClick}
+        disabled={!hasBuns}
       >
         {caption}
       </Button>
