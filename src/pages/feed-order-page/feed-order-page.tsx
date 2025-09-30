@@ -3,6 +3,7 @@ import { useParams } from 'react-router-dom';
 
 import { feedConnect } from '../../services/feedSlice';
 import { useAppDispatch, useAppSelector } from '../../services/hooks';
+import { WS_URLS } from '../../services/websocketInstances';
 import OrderInfo from '@components/order-info/order-info';
 
 import type { RootState } from '@services/store';
@@ -29,7 +30,7 @@ const FeedOrderPage = (): JSX.Element => {
   // Подключаемся к WebSocket для получения заказов, если еще не подключены
   useEffect(() => {
     if (!isConnected) {
-      dispatch(feedConnect());
+      dispatch(feedConnect({ url: WS_URLS.FEED }));
     }
   }, [dispatch, isConnected]);
 

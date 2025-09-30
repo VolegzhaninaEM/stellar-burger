@@ -40,6 +40,7 @@ export {
   feedConnect,
   feedConnected,
   feedDisconnected,
+  feedDisconnect,
   feedError,
   feedMessage,
 } from './feedSlice';
@@ -47,6 +48,7 @@ export {
   profileOrdersConnect,
   profileOrdersConnected,
   profileOrdersDisconnected,
+  profileOrdersDisconnect,
   profileOrdersError,
   profileOrdersMessage,
   clearProfileOrders,

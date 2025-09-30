@@ -25,9 +25,14 @@ const profileOrdersSlice = createSlice({
   name: 'profileOrders',
   initialState,
   reducers: {
-    profileOrdersConnect: (state) => {
-      state.isConnected = false;
-      state.error = null;
+    profileOrdersConnect: {
+      reducer: (state, _action: PayloadAction<{ url: string; token?: string }>) => {
+        state.isConnected = false;
+        state.error = null;
+      },
+      prepare: (payload: { url: string; token?: string }) => ({
+        payload,
+      }),
     },
     profileOrdersConnected: (state) => {
       state.isConnected = true;
@@ -42,13 +47,17 @@ const profileOrdersSlice = createSlice({
     },
     profileOrdersMessage: (state, action: PayloadAction<ProfileOrdersData>) => {
       console.log('📦 Получены заказы профиля:', action.payload);
-      const { orders } = action.payload;
-      state.orders = orders;
+      const payload = action.payload;
+      state.orders = payload.orders ?? [];
+      state.error = null;
     },
     clearProfileOrders: (state) => {
       state.orders = [];
       state.isConnected = false;
       state.error = null;
+    },
+    profileOrdersDisconnect: (state) => {
+      state.isConnected = false;
     },
   },
 });
@@ -60,6 +69,7 @@ export const {
   profileOrdersError,
   profileOrdersMessage,
   clearProfileOrders,
+  profileOrdersDisconnect,
 } = profileOrdersSlice.actions;
 
 export default profileOrdersSlice.reducer;

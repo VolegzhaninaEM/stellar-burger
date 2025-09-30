@@ -17,7 +17,7 @@ import { useAppDispatch, useAppSelector } from '../../services/hooks';
 import { fetchIngredients } from '../../services/ingredientsSlice.ts';
 import {
   clearProfileOrders,
-  profileOrdersDisconnected,
+  profileOrdersDisconnect,
 } from '../../services/profileOrdersSlice.ts';
 import { AppHeader } from '@components/app-header/app-header.tsx';
 import IngredientDetails from '@components/ingredient-details/ingredient-details.tsx';
@@ -94,7 +94,7 @@ export const App = (): JSX.Element => {
   // Отключаемся от WebSocket заказов профиля при выходе из системы
   useEffect(() => {
     if (!isAuth && authChecked) {
-      dispatch(profileOrdersDisconnected());
+      dispatch(profileOrdersDisconnect());
       dispatch(clearProfileOrders());
     }
   }, [isAuth, authChecked, dispatch]);
@@ -102,7 +102,7 @@ export const App = (): JSX.Element => {
   // Очищаем соединения при размонтировании компонента
   useEffect(() => {
     return (): void => {
-      dispatch(profileOrdersDisconnected());
+      dispatch(profileOrdersDisconnect());
       dispatch(clearProfileOrders());
     };
   }, [dispatch]);

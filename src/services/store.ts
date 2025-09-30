@@ -2,13 +2,15 @@ import { configureStore } from '@reduxjs/toolkit';
 
 import authReducer from './authSlice';
 import constructorReducer from './constructorSlice';
-import { feedMiddleware } from './feedMiddleware';
 import feedReducer from './feedSlice';
 import ingredientDetailsReducer from './ingredientDetailsSlice';
 import ingredientsReducer from './ingredientsSlice';
 import orderReducer from './orderSlice';
-import { profileOrdersMiddleware } from './profileOrdersMiddleware';
 import profileOrdersReducer from './profileOrdersSlice';
+import {
+  feedSocketMiddleware,
+  profileOrdersSocketMiddleware,
+} from './websocketInstances';
 
 import type { Action, ThunkAction } from '@reduxjs/toolkit';
 
@@ -32,7 +34,7 @@ export const store = configureStore({
         // Игнорируем определенные action types для несериализуемых данных
         ignoredActions: ['persist/PERSIST', 'persist/REHYDRATE'],
       },
-    }).concat(feedMiddleware, profileOrdersMiddleware),
+    }).concat(feedSocketMiddleware, profileOrdersSocketMiddleware),
 });
 
 // Типы для всего приложения

@@ -2,13 +2,13 @@ import {
   useAppDispatch,
   useAppSelector,
   feedConnect,
-  feedDisconnected,
+  feedDisconnect,
   selectFeedOrders,
   selectFeedIsConnected,
   selectFeedError,
   selectIngredients,
   profileOrdersConnect,
-  profileOrdersDisconnected,
+  profileOrdersDisconnect,
   selectProfileOrders,
   selectProfileOrdersIsConnected,
   selectProfileOrdersError,
@@ -16,6 +16,8 @@ import {
 import { memo, useCallback, useMemo, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
+import { WS_URLS } from '../../services/websocketInstances';
+import { getCookie } from '../../utils/cookies';
 import OrderCard from '../order-card/order-card';
 
 import type { TOrder } from '../order-card/order-card';
@@ -58,15 +60,31 @@ const OrderCards = ({
   );
 
   // Действия для подключения/отключения в зависимости от режима
-  const connectAction = mode === 'feed' ? feedConnect : profileOrdersConnect;
-  const disconnectAction =
-    mode === 'feed' ? feedDisconnected : profileOrdersDisconnected;
+  const disconnectAction = mode === 'feed' ? feedDisconnect : profileOrdersDisconnect;
+
+  // Функция для подключения с правильными параметрами
+  const connectToWebSocket = useCallback(() => {
+    if (mode === 'feed') {
+      // Для ленты заказов токен не нужен
+      dispatch(feedConnect({ url: WS_URLS.FEED }));
+    } else {
+      // Для заказов профиля нужен токен
+      const accessToken = getCookie('accessToken');
+      if (accessToken) {
+        dispatch(
+          profileOrdersConnect({ url: WS_URLS.PROFILE_ORDERS, token: accessToken })
+        );
+      } else {
+        console.error('❌ Токен авторизации не найден для заказов профиля');
+      }
+    }
+  }, [mode, dispatch]);
 
   // Функция для периодического обновления (только для ленты)
   const setupPeriodicUpdate = useCallback((): (() => void) => {
     if (mode !== 'feed' || !enablePeriodicUpdate) {
-      return (): void => {
-        // Ничего не делаем, если режим не "feed" или обновление отключено
+      return () => {
+        // Пустая функция для случаев, когда обновление не нужно
       };
     }
 
@@ -79,7 +97,7 @@ const OrderCards = ({
     updateTimerRef.current = window.setInterval(() => {
       console.log('🔄 Периодическое обновление ленты заказов');
       if (isMountedRef.current) {
-        dispatch(connectAction());
+        connectToWebSocket();
       }
     }, 15000);
 
@@ -89,15 +107,15 @@ const OrderCards = ({
         updateTimerRef.current = null;
       }
     };
-  }, [dispatch, connectAction, mode, enablePeriodicUpdate]);
+  }, [connectToWebSocket, mode, enablePeriodicUpdate]);
 
   // Подключение при монтировании компонента
   useEffect(() => {
     console.log(`📣 Инициализация компонента OrderCards (режим: ${mode})`);
     isMountedRef.current = true;
 
-    // Запускаем подключение
-    dispatch(connectAction());
+    // Запускаем подключение с правильными параметрами
+    connectToWebSocket();
 
     // Настраиваем периодическое обновление если нужно
     const cleanup = setupPeriodicUpdate();
@@ -109,7 +127,7 @@ const OrderCards = ({
       dispatch(disconnectAction());
       cleanup();
     };
-  }, [dispatch, connectAction, disconnectAction, setupPeriodicUpdate, mode]);
+  }, [connectToWebSocket, disconnectAction, setupPeriodicUpdate, mode, dispatch]);
 
   const handleOrderClick = useCallback(
     (order: TOrder): void => {
@@ -127,9 +145,9 @@ const OrderCards = ({
     console.log(`🔄 Попытка переподключения (режим: ${mode})...`);
     dispatch(disconnectAction());
     setTimeout(() => {
-      dispatch(connectAction());
+      connectToWebSocket();
     }, 1000);
-  }, [dispatch, connectAction, disconnectAction, mode]);
+  }, [dispatch, disconnectAction, connectToWebSocket, mode]);
 
   // Мемоизируем список заказов
   const orderElements = useMemo(() => {

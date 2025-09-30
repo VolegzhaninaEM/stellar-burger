@@ -1,7 +1,5 @@
 import OrderCards from '@/components/order-cards/order-cards';
-import { useAppDispatch } from '@/services';
-import { fetchIngredients } from '@/services/ingredientsSlice';
-import { memo, useEffect } from 'react';
+import { memo } from 'react';
 
 import OrdersStatus from '@components/orders-status/orders-status';
 
@@ -10,13 +8,6 @@ import type { JSX } from 'react';
 import feedsStyles from './feeds-page.module.css';
 
 const Feeds = (): JSX.Element => {
-  const dispatch = useAppDispatch();
-
-  // Загружаем ингредиенты при монтировании (нужны для отображения заказов)
-  useEffect(() => {
-    void dispatch(fetchIngredients());
-  }, [dispatch]);
-
   return (
     <div className={feedsStyles.container}>
       <h1 className={`${feedsStyles.title} text text_type_main-large`}>Лента заказов</h1>

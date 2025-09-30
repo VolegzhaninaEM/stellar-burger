@@ -29,9 +29,14 @@ const feedSlice = createSlice({
   name: 'feed',
   initialState,
   reducers: {
-    feedConnect: (state) => {
-      state.isConnected = false;
-      state.error = null;
+    feedConnect: {
+      reducer: (state, _action: PayloadAction<{ url: string; token?: string }>) => {
+        state.isConnected = false;
+        state.error = null;
+      },
+      prepare: (payload: { url: string; token?: string }) => ({
+        payload,
+      }),
     },
     feedConnected: (state) => {
       state.isConnected = true;
@@ -46,16 +51,27 @@ const feedSlice = createSlice({
     },
     feedMessage: (state, action: PayloadAction<FeedData>) => {
       console.log('📦 Получены заказы ленты:', action.payload);
-      const { orders, total, totalToday } = action.payload;
-      state.orders = orders;
-      state.total = total;
-      state.totalToday = totalToday;
+      const payload = action.payload;
+      state.orders = payload.orders ?? [];
+      state.total = payload.total ?? 0;
+      state.totalToday = payload.totalToday ?? 0;
+      state.error = null;
+    },
+    // Добавляем действие для отключения
+    feedDisconnect: (state) => {
+      state.isConnected = false;
     },
   },
 });
 
-export const { feedConnect, feedConnected, feedDisconnected, feedError, feedMessage } =
-  feedSlice.actions;
+export const {
+  feedConnect,
+  feedConnected,
+  feedDisconnected,
+  feedError,
+  feedMessage,
+  feedDisconnect,
+} = feedSlice.actions;
 
 export default feedSlice.reducer;
 
