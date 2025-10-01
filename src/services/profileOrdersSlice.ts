@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 
-import type { TOrder } from '@/components/order-card/order-card';
+import type { TOrder } from '../utils/types';
 import type { PayloadAction } from '@reduxjs/toolkit';
 
 export type ProfileOrdersState = {

@@ -6,23 +6,13 @@ import { memo, useMemo } from 'react';
 
 import { calculateOrderPrice } from '../../utils/orderUtils';
 
-import type { TIngredient } from '../../utils/types';
+import type { TIngredient, TOrder } from '../../utils/types';
 import type { JSX } from 'react';
 
 import styles from './order-card.module.css';
 
 // Типы для заказа
 export type TOrderStatus = 'done' | 'pending' | 'created';
-
-export type TOrder = {
-  _id: string;
-  ingredients: string[];
-  status: TOrderStatus;
-  name: string;
-  createdAt: string;
-  updatedAt?: string;
-  number: number;
-};
 
 type OrderCardProps = {
   order: TOrder;

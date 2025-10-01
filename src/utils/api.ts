@@ -44,3 +44,7 @@ export async function request<T>(
   });
   return checkResponse<T>(res);
 }
+
+export async function getOrderById<T>(orderId: string, token?: string): Promise<T> {
+  return await request<T>(`/orders/${orderId}`, 'GET', undefined, token);
+}

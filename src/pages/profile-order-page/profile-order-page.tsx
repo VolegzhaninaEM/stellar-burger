@@ -4,7 +4,7 @@ import { useParams } from 'react-router-dom';
 import OrderInfo from '../../components/order-info/order-info';
 import { useAppSelector } from '../../services/hooks';
 
-import type { TOrder } from '../../components/order-card/order-card';
+import type { TOrder } from '../../utils/types';
 import type { JSX } from 'react';
 
 import styles from './profile-order-page.module.css';

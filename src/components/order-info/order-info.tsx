@@ -6,8 +6,7 @@ import { memo, useMemo } from 'react';
 
 import { calculateOrderPrice, getOrderIngredients } from '../../utils/orderUtils';
 
-import type { TIngredient } from '../../utils/types';
-import type { TOrder } from '../order-card/order-card';
+import type { TIngredient, TOrder } from '../../utils/types';
 import type { JSX } from 'react';
 
 import styles from './order-info.module.css';

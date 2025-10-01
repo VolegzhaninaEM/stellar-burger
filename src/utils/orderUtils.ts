@@ -1,5 +1,4 @@
-import type { TOrder } from '../components/order-card/order-card';
-import type { TIngredient } from './types';
+import type { TOrder, TIngredient } from '../utils/types';
 
 /**
  * Подсчитывает общую стоимость заказа на основе его ингредиентов

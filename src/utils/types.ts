@@ -1,3 +1,5 @@
+import type { TOrderStatus } from '@components/order-card/order-card.tsx';
+
 export type TIngredient = {
   _id: string;
   name: string;
@@ -150,4 +152,15 @@ export type OrderState = {
   number: number | null;
   status: LoadingStatus;
   error: string | null;
+  selectedOrder?: TOrder | null;
+};
+
+export type TOrder = {
+  _id: string;
+  ingredients: string[];
+  status: TOrderStatus;
+  name: string;
+  createdAt: string;
+  updatedAt?: string;
+  number: number;
 };

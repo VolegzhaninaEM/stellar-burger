@@ -13,7 +13,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 
 import OrderCard from '../order-card/order-card';
 
-import type { TOrder } from '../order-card/order-card';
+import type { TOrder } from '../../utils/types';
 import type { JSX } from 'react';
 
 import styles from './order-cards.module.css';

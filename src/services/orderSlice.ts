@@ -1,9 +1,9 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 
-import { request } from '../utils/api';
+import { request, getOrderById } from '../utils/api';
 import { getCookie } from '../utils/cookies';
 
-import type { LoadingStatus, OrderState } from '../../src/utils/types';
+import type { LoadingStatus, OrderState, TOrder } from '../../src/utils/types';
 import type { PayloadAction } from '@reduxjs/toolkit';
 
 // Типы для API ответа
@@ -17,6 +17,7 @@ const initialState: OrderState = {
   number: null,
   status: 'idle',
   error: null,
+  selectedOrder: null, // новое поле для хранения заказа
 };
 
 // Создание заказа
@@ -72,6 +73,25 @@ export const fetchOrders = createAsyncThunk<
   }
 });
 
+// Экшен для загрузки одного заказа по id
+export const fetchOrderById = createAsyncThunk<TOrder, string, { rejectValue: string }>(
+  'order/fetchById',
+  async (orderId, { rejectWithValue }) => {
+    try {
+      const accessToken = getCookie('accessToken');
+      const response = await getOrderById<{ orders: TOrder[] }>(orderId, accessToken);
+      if (!response.orders || response.orders.length === 0) {
+        return rejectWithValue('Заказ не найден');
+      }
+      return response.orders[0];
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Ошибка загрузки заказа';
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
+
 const orderSlice = createSlice({
   name: 'order',
   initialState,
@@ -119,6 +139,21 @@ const orderSlice = createSlice({
         state.status = 'failed';
         state.error =
           action.payload ?? action.error.message ?? 'Ошибка загрузки заказов';
+      })
+      .addCase(fetchOrderById.pending, (state) => {
+        state.status = 'loading';
+        state.error = null;
+        state.selectedOrder = null;
+      })
+      .addCase(fetchOrderById.fulfilled, (state, { payload }) => {
+        state.selectedOrder = payload;
+        state.status = 'succeeded';
+        state.error = null;
+      })
+      .addCase(fetchOrderById.rejected, (state, { payload }) => {
+        state.status = 'failed';
+        state.error = payload ?? 'Ошибка загрузки заказа';
+        state.selectedOrder = null;
       }),
 });
 

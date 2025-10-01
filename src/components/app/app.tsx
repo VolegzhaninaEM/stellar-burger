@@ -15,7 +15,7 @@ import { Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { setAuthChecked, initializeAuth } from '../../services/authSlice.ts';
 import { useAppDispatch, useAppSelector } from '../../services/hooks';
 import { fetchIngredients } from '../../services/ingredientsSlice.ts';
-import { clearProfileOrders } from '../../services/profileOrdersSlice.ts';
+import { fetchOrderById } from '../../services/orderSlice.ts';
 import { AppHeader } from '@components/app-header/app-header.tsx';
 import IngredientDetails from '@components/ingredient-details/ingredient-details.tsx';
 import Modal from '@components/modal/modal.tsx';
@@ -66,6 +66,10 @@ export const App = (): JSX.Element => {
     return undefined;
   }, [feedOrders, profileOrders, orderId, location.pathname, state?.background]);
 
+  // Получаем статус и заказ из orderSlice
+  const selectedOrder = useAppSelector((s) => s.order.selectedOrder);
+  const orderStatus = useAppSelector((s) => s.order.status);
+
   const dispatch = useAppDispatch();
 
   // Используем новую функцию инициализации авторизации
@@ -87,19 +91,18 @@ export const App = (): JSX.Element => {
     void initApp();
   }, [dispatch]);
 
-  // Отключаемся от WebSocket заказов профиля при выходе из системы
+  // Загружаем заказ по id при прямом переходе на /profile/orders/:orderId
   useEffect(() => {
-    if (!isAuth && authChecked) {
-      dispatch(clearProfileOrders());
+    if (
+      location.pathname.startsWith('/profile/orders/') &&
+      !currentOrder &&
+      orderId &&
+      isAuth &&
+      state?.background === undefined // только при прямом переходе
+    ) {
+      void dispatch(fetchOrderById(orderId));
     }
-  }, [isAuth, authChecked, dispatch]);
-
-  // Очищаем соединения при размонтировании компонента
-  useEffect(() => {
-    return (): void => {
-      dispatch(clearProfileOrders());
-    };
-  }, [dispatch]);
+  }, [location.pathname, currentOrder, orderId, isAuth, state?.background, dispatch]);
 
   if (!authChecked) {
     return <div>Загрузка...</div>; // 🔁 Показываем спиннер, пока не знаем статус
@@ -176,9 +179,12 @@ export const App = (): JSX.Element => {
             <>
               {isAuth ? (
                 <Modal onClose={() => window.history.back()}>
-                  {currentOrder ? (
+                  {/* Показываем спиннер, если заказ загружается */}
+                  {orderStatus === 'loading' ? (
+                    <div>Загрузка заказа...</div>
+                  ) : (currentOrder ?? selectedOrder) ? (
                     <OrderInfo
-                      order={currentOrder}
+                      order={currentOrder ?? selectedOrder!}
                       ingredients={ingredients}
                       showStatus={true}
                     />
