@@ -1,4 +1,4 @@
-import { useAppSelector } from '../../services/hooks.ts';
+import { useAppSelector } from '../../services/hooks';
 import FinalPrice from '@components/final-price/final-price.tsx';
 import IngredientCards from '@components/ingredient-cards/ingredient-cards.tsx';
 
@@ -22,17 +22,17 @@ export const BurgerConstructor: FC<TBurgerConstructorProps> = ({
   return (
     <section className={styles.burger_constructor}>
       <IngredientCards extendedClass={extendedClass} />
-      {buns !== null ? (
-        <FinalPrice
-          ingredients={ingredients}
-          buns={buns}
-          handleOrderButtonClick={handleOrderButtonClick}
-          caption={caption}
-        />
-      ) : (
-        <p className={`text text_type_main-default text_color_inactive`}>
+      <FinalPrice
+        ingredients={ingredients}
+        buns={buns}
+        handleOrderButtonClick={handleOrderButtonClick}
+        caption={caption}
+        hasBuns={buns !== null}
+      />
+      {buns === null && (
+        <p className={`text text_type_main-default text_color_inactive mt-4`}>
           {ingredients.length > 0
-            ? 'Добавьте булку в конструктор бургера'
+            ? 'Добавьте булку для оформления заказа'
             : 'Выберите ингредиенты и перетащите их в конструктор бургера'}
         </p>
       )}

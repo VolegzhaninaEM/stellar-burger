@@ -1,5 +1,5 @@
 import { CloseIcon } from '@krgaa/react-developer-burger-ui-components';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, memo } from 'react';
 import { createPortal } from 'react-dom';
 
 import ModalOverlay from '../modal-overlay/modal-overlay';
@@ -13,7 +13,7 @@ type TModalProps = {
   children: ReactNode;
 };
 
-export const Modal: FC<TModalProps> = ({
+const Modal: FC<TModalProps> = ({
   onClose,
   children,
 }: TModalProps): JSX.Element | null => {
@@ -31,9 +31,11 @@ export const Modal: FC<TModalProps> = ({
     return (): void => document.removeEventListener('keydown', handleEscape);
   }, [onClose]);
 
-  const modalRoot = document.getElementById('app');
+  const modalRoot = document.getElementById('modal-root');
 
-  if (!mounted || !modalRoot) return null;
+  if (!mounted || !modalRoot) {
+    return null;
+  }
 
   return createPortal(
     <>
@@ -53,3 +55,5 @@ export const Modal: FC<TModalProps> = ({
     modalRoot
   );
 };
+
+export default memo(Modal);

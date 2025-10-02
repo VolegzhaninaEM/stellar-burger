@@ -2,13 +2,22 @@ import { createSlice } from '@reduxjs/toolkit';
 import { v4 as uuidv4 } from 'uuid';
 
 import type { PayloadAction } from '@reduxjs/toolkit';
-import type { TConstructorIngredient, TIngredient } from '@utils/types.ts';
-type ConstructorState = {
-  buns: TConstructorIngredient | null;
-  ingredients: TConstructorIngredient[];
+import type {
+  TConstructorIngredient,
+  TIngredient,
+  ConstructorState,
+} from '@utils/types';
+
+const initialState: ConstructorState = {
+  buns: null,
+  ingredients: [],
 };
 
-const initialState: ConstructorState = { buns: null, ingredients: [] };
+// Типы для payload действий
+type MoveIngredientPayload = {
+  dragIndex: number;
+  hoverIndex: number;
+};
 
 const constructorSlice = createSlice({
   name: 'burgerConstructor',
@@ -36,10 +45,7 @@ const constructorSlice = createSlice({
     removeIngredient: (state, { payload }: PayloadAction<string>) => {
       state.ingredients = state.ingredients.filter((i) => i?.uniqueId !== payload);
     },
-    moveIngredient: (
-      state,
-      { payload }: PayloadAction<{ dragIndex: number; hoverIndex: number }>
-    ) => {
+    moveIngredient: (state, { payload }: PayloadAction<MoveIngredientPayload>) => {
       const { dragIndex, hoverIndex } = payload;
       const dragItem = state.ingredients[dragIndex];
       state.ingredients.splice(dragIndex, 1);
@@ -56,4 +62,46 @@ export const {
   moveIngredient,
   clearConstructor,
 } = constructorSlice.actions;
+
 export default constructorSlice.reducer;
+
+// Селекторы с типизацией
+export const selectConstructorBuns = (state: {
+  burgerConstructor: ConstructorState;
+}): TConstructorIngredient | null => state.burgerConstructor.buns;
+
+export const selectConstructorIngredients = (state: {
+  burgerConstructor: ConstructorState;
+}): TConstructorIngredient[] => {
+  return state.burgerConstructor.ingredients;
+};
+
+export const selectConstructorState = (state: {
+  burgerConstructor: ConstructorState;
+}): ConstructorState => state.burgerConstructor;
+
+export const selectConstructorTotalPrice = (state: {
+  burgerConstructor: ConstructorState;
+}): number => {
+  const { buns, ingredients } = state.burgerConstructor;
+  const bunPrice = buns ? buns.price * 2 : 0; // булка считается дважды
+  const ingredientsPrice = ingredients.reduce(
+    (total, ingredient) => total + ingredient.price,
+    0
+  );
+  return bunPrice + ingredientsPrice;
+};
+
+export const selectConstructorItemsCount = (state: {
+  burgerConstructor: ConstructorState;
+}): number => {
+  const { buns, ingredients } = state.burgerConstructor;
+  return (buns ? 2 : 0) + ingredients.length;
+};
+
+export const selectIsConstructorEmpty = (state: {
+  burgerConstructor: ConstructorState;
+}): boolean => {
+  const { buns, ingredients } = state.burgerConstructor;
+  return !buns && ingredients.length === 0;
+};

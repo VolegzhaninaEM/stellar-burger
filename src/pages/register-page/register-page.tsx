@@ -13,7 +13,7 @@ import { ROUTES } from '@utils/constants.ts';
 
 import styles from './register-page.module.css';
 
-export const RegisterPage = (): JSX.Element => {
+const RegisterPage = (): JSX.Element => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');

@@ -13,7 +13,7 @@ import type { JSX } from 'react';
 
 import styles from './reset-password.module.css';
 
-export const ResetPassword = (): JSX.Element => {
+const ResetPassword = (): JSX.Element => {
   const navigate = useNavigate();
   const [newPassword, setNewPassword] = useState('');
   const [value, setValue] = useState('');

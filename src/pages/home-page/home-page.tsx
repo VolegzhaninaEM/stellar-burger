@@ -11,7 +11,7 @@ import {
 import { closeOrderModal, createOrder } from '../../services/orderSlice.ts';
 import { BurgerConstructor } from '@components/burger-contructor/burger-constructor';
 import BurgerIngredients from '@components/burger-ingredients/burger-ingredients.tsx';
-import { Modal } from '@components/modal/modal.tsx';
+import Modal from '@components/modal/modal.tsx';
 import OrderDetails from '@components/order-details/order-details.tsx';
 import { ROUTES } from '@utils/constants.ts';
 
@@ -21,12 +21,14 @@ import type { JSX } from 'react';
 
 import styles from './home-page.module.css';
 
-export const HomePage = (): JSX.Element => {
+const HomePage = (): JSX.Element => {
   const dispatch: AppDispatch = useAppDispatch();
   const navigate = useNavigate();
   const location = useLocation();
   const isAuth = useAppSelector((s) => s.auth.accessToken);
   const orderNumber = useAppSelector((s) => s.order.number);
+  const orderStatus = useAppSelector((s) => s.order.status);
+  const orderError = useAppSelector((s) => s.order.error);
 
   const handleIngredientClick = useCallback(
     (ingredientItem: TIngredient) => {
@@ -35,7 +37,7 @@ export const HomePage = (): JSX.Element => {
         state: { background: location },
       });
     },
-    [dispatch, location]
+    [dispatch, location, navigate]
   );
   const { buns, ingredients } = useAppSelector((s) => s.burgerConstructor);
   const handleOrderButtonClick = useCallback(() => {
@@ -44,13 +46,15 @@ export const HomePage = (): JSX.Element => {
       return;
     }
     if (!buns) return;
+
     const ids: string[] = [
       buns._id,
       ...ingredients.map((i: TIngredient): string => i._id),
       buns._id,
     ];
+
     void dispatch(createOrder(ids));
-  }, [dispatch, buns, ingredients]);
+  }, [dispatch, buns, ingredients, isAuth, navigate]);
 
   const closeModal = useCallback(() => {
     dispatch(clearIngredient());
@@ -59,7 +63,7 @@ export const HomePage = (): JSX.Element => {
 
   return (
     <>
-      <div className={styles.app} id="app">
+      <div className={styles.app}>
         <h1 className={`${styles.title} text text_type_main-large mt-10 mb-5 pl-5`}>
           Соберите бургер
         </h1>
@@ -76,9 +80,13 @@ export const HomePage = (): JSX.Element => {
             />
           </main>
         </DndProvider>
-        {orderNumber !== null && (
+        {(orderNumber !== null || orderStatus === 'loading' || orderError) && (
           <Modal onClose={closeModal}>
-            <OrderDetails orderNumber={orderNumber} />
+            <OrderDetails
+              orderNumber={orderNumber}
+              status={orderStatus}
+              error={orderError}
+            />
           </Modal>
         )}
       </div>

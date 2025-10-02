@@ -13,8 +13,7 @@ import { ROUTES } from '@utils/constants';
 import type { JSX, FormEvent } from 'react';
 
 import styles from './login-page.module.css';
-
-export const LoginPage = (): JSX.Element => {
+const LoginPage = (): JSX.Element => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();

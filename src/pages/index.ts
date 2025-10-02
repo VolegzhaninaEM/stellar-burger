@@ -1,7 +1,10 @@
-export { ForgotPassword } from './forgot-password/forgot-password';
-export { ResetPassword } from './reset-password/reset-password';
-export { HomePage } from './home-page/home-page';
-export { LoginPage } from './login-page/login-page';
-export { ProfilePage } from './profile-page/profile-page';
-export { IngerdientPage } from './ingredient-page/ingredient-page';
-export { RegisterPage } from './register-page/register-page';
+export { default as ForgotPassword } from './forgot-password/forgot-password';
+export { default as ResetPassword } from './reset-password/reset-password';
+export { default as HomePage } from './home-page/home-page';
+export { default as LoginPage } from './login-page/login-page';
+export { default as ProfilePage } from './profile-page/profile-page';
+export { default as IngredientPage } from './ingredient-page/ingredient-page';
+export { default as RegisterPage } from './register-page/register-page';
+export { default as FeedsPage } from './feeds-page/feeds-page';
+export { default as FeedOrderPage } from './feed-order-page/feed-order-page';
+export { default as ProfileOrderPage } from './profile-order-page/profile-order-page';

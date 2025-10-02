@@ -9,7 +9,7 @@ import type { JSX } from 'react';
 
 import styles from './forgot-password.module.css';
 
-export const ForgotPassword = (): JSX.Element => {
+const ForgotPassword = (): JSX.Element => {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
 

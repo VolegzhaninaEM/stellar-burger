@@ -32,8 +32,7 @@
       "@pages/*": ["src/pages/*"]
     }
   },
-  "plugins": [{ "name": "typescript-plugin-css-modules" }],
-  "include": ["src"],
+  "include": ["src", "src/types/css-modules.d.ts"],
   "exclude": ["cypress"],
   "references": [{ "path": "./tsconfig.node.json" }],
   "types": ["@testing-library/jest-dom"]
