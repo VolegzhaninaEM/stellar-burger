@@ -15,7 +15,13 @@ const ModalOverlay: FC<TModalOverlayProps> = ({
     }
   };
 
-  return <div className={modalOverlayStyles.overlay} onClick={handleClick} />;
+  return (
+    <div
+      className={modalOverlayStyles.overlay}
+      onClick={handleClick}
+      data-cy="modal-overlay"
+    />
+  );
 };
 
 export default ModalOverlay;
