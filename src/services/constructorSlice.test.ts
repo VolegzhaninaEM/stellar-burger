@@ -19,13 +19,15 @@ import type {
 } from '../utils/types';
 
 // Мокируем uuid
-jest.mock('uuid');
+jest.mock('uuid', () => ({
+  v4: jest.fn(() => 'mock-uuid'),
+}));
 
 // Импортируем замоканный модуль
-import * as uuidModule from 'uuid';
+import { v4 as uuidv4 } from 'uuid';
 
 // Типизированный мок для uuid
-const mockV4 = uuidModule.v4 as jest.MockedFunction<typeof uuidModule.v4>;
+const mockUuidv4 = uuidv4 as jest.MockedFunction<typeof uuidv4>;
 
 // Типы для корневого состояния
 type RootState = {
@@ -77,7 +79,8 @@ describe('constructorSlice', () => {
         burgerConstructor: constructorReducer,
       },
     });
-    mockV4.mockReturnValue('mock-uuid');
+    // @ts-expect-error - мокирование uuid с перегруженными типами
+    mockUuidv4.mockReturnValue('mock-uuid');
   });
 
   describe('initial state', () => {
