@@ -6,6 +6,8 @@
 		"noEmit": true,
 		"types": ["cypress", "node"],
 		"allowImportingTsExtensions": true,
+		"strict": true,
+		"strictNullChecks": true,
 
 		"baseUrl": "..",
 		"paths": {

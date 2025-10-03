@@ -41,8 +41,20 @@ const IngredientCard: FC<TIngredientCardProps> = ({
     }
   }, [drag, drop]);
 
+  const dataCy =
+    ingredient.type === 'bun'
+      ? 'ingredient-bun'
+      : ingredient.type === 'main'
+        ? 'ingredient-main'
+        : 'ingredient-sauce';
+
   return (
-    <div ref={ref} style={{ opacity }} className="mb-4" data-cy="constructor-ingredient">
+    <div
+      ref={ref}
+      style={{ opacity }}
+      className="mb-4"
+      data-cy={`ingredient-item ${dataCy} constructor-ingredient`}
+    >
       <DragIcon type="primary" />
       <ConstructorElement
         text={ingredient.name}

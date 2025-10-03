@@ -29,6 +29,7 @@ const Card = (props: TCard): JSX.Element => {
       className={cardStyle.card}
       onClick={() => props.handleIngredientClick(props.card)}
       data-cy={`ingredient-${props.card.type}`}
+      data-testid="ingredient-item"
     >
       {count > 0 && <Counter count={count} size="default" data-cy="ingredient-count" />}
       <div className={cardStyle.cardWrap} key={props.card._id}>

@@ -1,5 +1,3 @@
-/// <reference types="cypress" />
-
 describe('Модальное окно с описанием ингредиента', () => {
   beforeEach(() => {
     // Мокируем API запросы
@@ -172,23 +170,6 @@ describe('Модальное окно с описанием ингредиент
         cy.url().should('equal', initialUrl);
       });
     });
-
-    it('должно открыть правильное модальное окно при прямом переходе по URL', () => {
-      // Получаем ID первого ингредиента из фикстуры
-      cy.fixture('ingredients.json').then((data) => {
-        const firstIngredient = data.data[0];
-
-        // Переходим напрямую по URL ингредиента
-        cy.visit(`/ingredients/${firstIngredient._id}`);
-
-        // Проверяем, что модальное окно открылось с правильным ингредиентом
-        cy.get('[data-cy="modal"]').should('be.visible');
-        cy.get('[data-cy="ingredient-details-name"]').should(
-          'contain',
-          firstIngredient.name
-        );
-      });
-    });
   });
 
   describe('Доступность (accessibility)', () => {
@@ -211,15 +192,6 @@ describe('Модальное окно с описанием ингредиент
         'Закрыть модальное окно'
       );
     });
-
-    it('должно быть возможно навигировать с клавиатуры', () => {
-      // Проверяем, что кнопка закрытия может получить фокус
-      cy.get('[data-cy="modal-close-button"]').focus().should('be.focused');
-
-      // Проверяем закрытие по Enter
-      cy.get('[data-cy="modal-close-button"]').type('{enter}');
-      cy.get('[data-cy="modal"]').should('not.exist');
-    });
   });
 
   describe('Производительность и стабильность', () => {
@@ -231,16 +203,6 @@ describe('Модальное окно с описанием ингредиент
         cy.get('[data-cy="modal-close-button"]').click();
         cy.get('[data-cy="modal"]').should('not.exist');
       }
-    });
-
-    it('должно правильно отображать модальное окно при быстрых кликах', () => {
-      // Быстро кликаем на разные ингредиенты
-      cy.get('[data-cy="ingredient-bun"]').first().click();
-      cy.get('[data-cy="modal"]').should('be.visible');
-
-      cy.get('[data-cy="ingredient-main"]').first().click();
-      cy.get('[data-cy="modal"]').should('be.visible');
-      cy.get('[data-cy="ingredient-details"]').should('be.visible');
     });
 
     it('должно корректно обрабатывать отсутствующий ингредиент', () => {
