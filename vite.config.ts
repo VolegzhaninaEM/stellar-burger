@@ -18,7 +18,6 @@ export default defineConfig({
       esmExport: true,
     }),
   ],
-  base: '/stellar-burger/',
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
