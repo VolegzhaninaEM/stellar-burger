@@ -1,3 +1,5 @@
+import { SELECTORS } from '../support/selectors';
+
 describe('Модальное окно с данными о заказе', () => {
   beforeEach(() => {
     // Мокируем API запросы
@@ -14,17 +16,17 @@ describe('Модальное окно с данными о заказе', () => 
   describe('Открытие модального окна заказа', () => {
     it('не должно открывать модальное окно если нет булки', () => {
       // Добавляем только ингредиент без булки
-      cy.get('[data-cy="ingredient-main"]').first().trigger('dragstart');
-      cy.get('[data-cy="burger-constructor"]').trigger('dragover').trigger('drop');
+      cy.get(SELECTORS.INGREDIENT_MAIN).first().trigger('dragstart');
+      cy.get(SELECTORS.BURGER_CONSTRUCTOR).trigger('dragover').trigger('drop');
 
       // Проверяем, что кнопка неактивна
-      cy.get('[data-cy="order-button"]').should('be.disabled');
+      cy.get(SELECTORS.ORDER_BUTTON).should('be.disabled');
 
       // Пытаемся кликнуть на неактивную кнопку
-      cy.get('[data-cy="order-button"]').click({ force: true });
+      cy.get(SELECTORS.ORDER_BUTTON).click({ force: true });
 
       // Модальное окно не должно открыться
-      cy.get('[data-cy="modal"]').should('not.exist');
+      cy.get(SELECTORS.MODAL).should('not.exist');
     });
   });
 
@@ -34,11 +36,11 @@ describe('Модальное окно с данными о заказе', () => 
       cy.window().its('localStorage').invoke('removeItem', 'accessToken');
 
       // Добавляем булку
-      cy.get('[data-cy="ingredient-bun"]').first().trigger('dragstart');
-      cy.get('[data-cy="burger-constructor"]').trigger('dragover').trigger('drop');
+      cy.get(SELECTORS.INGREDIENT_BUN).first().trigger('dragstart');
+      cy.get(SELECTORS.BURGER_CONSTRUCTOR).trigger('dragover').trigger('drop');
 
       // Кликаем на кнопку заказа
-      cy.get('[data-cy="order-button"]').click();
+      cy.get(SELECTORS.ORDER_BUTTON).click();
 
       // Проверяем, что пользователя перенаправило на страницу входа
       cy.url().should('include', '/login');
@@ -52,11 +54,11 @@ describe('Модальное окно с данными о заказе', () => 
       cy.window().its('localStorage').invoke('removeItem', 'refreshToken');
 
       // Добавляем булку
-      cy.get('[data-cy="ingredient-bun"]').first().trigger('dragstart');
-      cy.get('[data-cy="burger-constructor"]').trigger('dragover').trigger('drop');
+      cy.get(SELECTORS.INGREDIENT_BUN).first().trigger('dragstart');
+      cy.get(SELECTORS.BURGER_CONSTRUCTOR).trigger('dragover').trigger('drop');
 
       // Кликаем на кнопку заказа
-      cy.get('[data-cy="order-button"]').click();
+      cy.get(SELECTORS.ORDER_BUTTON).click();
 
       // Должны быть перенаправлены на страницу логина
       cy.url().should('include', '/login');
@@ -66,20 +68,20 @@ describe('Модальное окно с данными о заказе', () => 
       cy.window().its('localStorage').invoke('removeItem', 'accessToken');
 
       // Добавляем ингредиенты
-      cy.get('[data-cy="ingredient-bun"]').first().trigger('dragstart');
-      cy.get('[data-cy="burger-constructor"]').trigger('dragover').trigger('drop');
-      cy.get('[data-cy="ingredient-main"]').first().trigger('dragstart');
-      cy.get('[data-cy="burger-constructor"]').trigger('dragover').trigger('drop');
+      cy.get(SELECTORS.INGREDIENT_BUN).first().trigger('dragstart');
+      cy.get(SELECTORS.BURGER_CONSTRUCTOR).trigger('dragover').trigger('drop');
+      cy.get(SELECTORS.INGREDIENT_MAIN).first().trigger('dragstart');
+      cy.get(SELECTORS.BURGER_CONSTRUCTOR).trigger('dragover').trigger('drop');
 
       // Кликаем на кнопку заказа
-      cy.get('[data-cy="order-button"]').click();
+      cy.get(SELECTORS.ORDER_BUTTON).click();
 
       // Возвращаемся на главную страницу
       cy.visit('/');
       cy.wait('@getIngredients');
 
       // Проверяем базовое состояние
-      cy.get('[data-cy="burger-constructor"]').should('be.visible');
+      cy.get(SELECTORS.BURGER_CONSTRUCTOR).should('be.visible');
     });
   });
 });

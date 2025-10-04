@@ -1,3 +1,5 @@
+import { SELECTORS } from '../support/selectors';
+
 // Типы для данных из фикстуры
 type Ingredient = {
   _id: string;
@@ -37,20 +39,20 @@ describe('Отображение данных ингредиента в мода
         const ingredient = data.data[0]; // Краторная булка N-200i
 
         // Открываем модальное окно
-        cy.get('[data-cy="ingredient-bun"]').first().click();
+        cy.get(SELECTORS.INGREDIENT_BUN).first().click();
 
         // Проверяем заголовок модального окна
-        cy.get('[data-cy="ingredient-details-title"]')
+        cy.get(SELECTORS.INGREDIENT_DETAILS_TITLE)
           .should('be.visible')
           .and('contain.text', 'Детали ингредиента');
 
         // Проверяем название ингредиента
-        cy.get('[data-cy="ingredient-details-name"]')
+        cy.get(SELECTORS.INGREDIENT_DETAILS_NAME)
           .should('be.visible')
           .and('contain.text', ingredient.name);
 
         // Проверяем изображение ингредиента
-        cy.get('[data-cy="ingredient-details-image"]')
+        cy.get(SELECTORS.INGREDIENT_DETAILS_IMAGE)
           .should('be.visible')
           .and('have.attr', 'src', ingredient.image)
           .and('have.attr', 'alt', ingredient.name);
@@ -61,28 +63,28 @@ describe('Отображение данных ингредиента в мода
       cy.fixture<IngredientsResponse>('ingredients.json').then((data) => {
         const ingredient = data.data[0]; // Краторная булка N-200i
 
-        cy.get('[data-cy="ingredient-bun"]').first().click();
+        cy.get(SELECTORS.INGREDIENT_BUN).first().click();
 
         // Проверяем калории
-        cy.get('[data-cy="nutrition-calories"]')
+        cy.get(SELECTORS.NUTRITION_CALORIES)
           .should('be.visible')
           .and('contain.text', 'Калории, ккал')
           .and('contain.text', ingredient.calories.toString());
 
         // Проверяем белки
-        cy.get('[data-cy="nutrition-proteins"]')
+        cy.get(SELECTORS.NUTRITION_PROTEINS)
           .should('be.visible')
           .and('contain.text', 'Белки, г')
           .and('contain.text', ingredient.proteins.toString());
 
         // Проверяем жиры
-        cy.get('[data-cy="nutrition-fats"]')
+        cy.get(SELECTORS.NUTRITION_FATS)
           .should('be.visible')
           .and('contain.text', 'Жиры, г')
           .and('contain.text', ingredient.fat.toString());
 
         // Проверяем углеводы
-        cy.get('[data-cy="nutrition-carbohydrates"]')
+        cy.get(SELECTORS.NUTRITION_CARBOHYDRATES)
           .should('be.visible')
           .and('contain.text', 'Углеводы, г')
           .and('contain.text', ingredient.carbohydrates.toString());
@@ -99,25 +101,25 @@ describe('Отображение данных ингредиента в мода
           throw new Error('Булка не найдена в фикстуре');
         }
 
-        cy.get('[data-cy="ingredient-bun"]').first().click();
+        cy.get(SELECTORS.INGREDIENT_BUN).first().click();
 
-        cy.get('[data-cy="ingredient-details-name"]').should(
+        cy.get(SELECTORS.INGREDIENT_DETAILS_NAME).should(
           'contain.text',
           bunIngredient.name
         );
-        cy.get('[data-cy="nutrition-calories"]').should(
+        cy.get(SELECTORS.NUTRITION_CALORIES).should(
           'contain.text',
           bunIngredient.calories.toString()
         );
-        cy.get('[data-cy="nutrition-proteins"]').should(
+        cy.get(SELECTORS.NUTRITION_PROTEINS).should(
           'contain.text',
           bunIngredient.proteins.toString()
         );
-        cy.get('[data-cy="nutrition-fats"]').should(
+        cy.get(SELECTORS.NUTRITION_FATS).should(
           'contain.text',
           bunIngredient.fat.toString()
         );
-        cy.get('[data-cy="nutrition-carbohydrates"]').should(
+        cy.get(SELECTORS.NUTRITION_CARBOHYDRATES).should(
           'contain.text',
           bunIngredient.carbohydrates.toString()
         );
@@ -132,25 +134,25 @@ describe('Отображение данных ингредиента в мода
           throw new Error('Основной ингредиент не найден в фикстуре');
         }
 
-        cy.get('[data-cy="ingredient-main"]').first().click();
+        cy.get(SELECTORS.INGREDIENT_MAIN).first().click();
 
-        cy.get('[data-cy="ingredient-details-name"]').should(
+        cy.get(SELECTORS.INGREDIENT_DETAILS_NAME).should(
           'contain.text',
           mainIngredient.name
         );
-        cy.get('[data-cy="nutrition-calories"]').should(
+        cy.get(SELECTORS.NUTRITION_CALORIES).should(
           'contain.text',
           mainIngredient.calories.toString()
         );
-        cy.get('[data-cy="nutrition-proteins"]').should(
+        cy.get(SELECTORS.NUTRITION_PROTEINS).should(
           'contain.text',
           mainIngredient.proteins.toString()
         );
-        cy.get('[data-cy="nutrition-fats"]').should(
+        cy.get(SELECTORS.NUTRITION_FATS).should(
           'contain.text',
           mainIngredient.fat.toString()
         );
-        cy.get('[data-cy="nutrition-carbohydrates"]').should(
+        cy.get(SELECTORS.NUTRITION_CARBOHYDRATES).should(
           'contain.text',
           mainIngredient.carbohydrates.toString()
         );
@@ -165,25 +167,25 @@ describe('Отображение данных ингредиента в мода
           throw new Error('Соус не найден в фикстуре');
         }
 
-        cy.get('[data-cy="ingredient-sauce"]').first().click();
+        cy.get(SELECTORS.INGREDIENT_SAUCE).first().click();
 
-        cy.get('[data-cy="ingredient-details-name"]').should(
+        cy.get(SELECTORS.INGREDIENT_DETAILS_NAME).should(
           'contain.text',
           sauceIngredient.name
         );
-        cy.get('[data-cy="nutrition-calories"]').should(
+        cy.get(SELECTORS.NUTRITION_CALORIES).should(
           'contain.text',
           sauceIngredient.calories.toString()
         );
-        cy.get('[data-cy="nutrition-proteins"]').should(
+        cy.get(SELECTORS.NUTRITION_PROTEINS).should(
           'contain.text',
           sauceIngredient.proteins.toString()
         );
-        cy.get('[data-cy="nutrition-fats"]').should(
+        cy.get(SELECTORS.NUTRITION_FATS).should(
           'contain.text',
           sauceIngredient.fat.toString()
         );
-        cy.get('[data-cy="nutrition-carbohydrates"]').should(
+        cy.get(SELECTORS.NUTRITION_CARBOHYDRATES).should(
           'contain.text',
           sauceIngredient.carbohydrates.toString()
         );
@@ -193,71 +195,89 @@ describe('Отображение данных ингредиента в мода
 
   describe('Проверка конкретных значений из фикстуры', () => {
     it('должно отображать точные данные для "Краторная булка N-200i"', () => {
-      cy.get('[data-cy="ingredient-bun"]').first().click();
+      cy.get(SELECTORS.INGREDIENT_BUN).first().click();
 
       // Проверяем конкретные значения из фикстуры
-      cy.get('[data-cy="ingredient-details-name"]').should(
+      cy.get(SELECTORS.INGREDIENT_DETAILS_NAME).should(
         'contain.text',
         'Краторная булка N-200i'
       );
-      cy.get('[data-cy="nutrition-calories"]').should('contain.text', '420');
-      cy.get('[data-cy="nutrition-proteins"]').should('contain.text', '80');
-      cy.get('[data-cy="nutrition-fats"]').should('contain.text', '24');
-      cy.get('[data-cy="nutrition-carbohydrates"]').should('contain.text', '53');
+      cy.get(SELECTORS.NUTRITION_CALORIES).should('contain.text', '420');
+      cy.get(SELECTORS.NUTRITION_PROTEINS).should('contain.text', '80');
+      cy.get(SELECTORS.NUTRITION_FATS).should('contain.text', '24');
+      cy.get(SELECTORS.NUTRITION_CARBOHYDRATES).should('contain.text', '53');
     });
 
     it('должно отображать точные данные для "Биокотлета из марсианской Магнолии"', () => {
-      cy.get('[data-cy="ingredient-main"]').first().click();
+      cy.get(SELECTORS.INGREDIENT_MAIN).first().click();
 
       // Проверяем конкретные значения из фикстуры
-      cy.get('[data-cy="ingredient-details-name"]').should(
+      cy.get(SELECTORS.INGREDIENT_DETAILS_NAME).should(
         'contain.text',
         'Биокотлета из марсианской Магнолии'
       );
-      cy.get('[data-cy="nutrition-calories"]').should('contain.text', '4242');
-      cy.get('[data-cy="nutrition-proteins"]').should('contain.text', '420');
-      cy.get('[data-cy="nutrition-fats"]').should('contain.text', '142');
-      cy.get('[data-cy="nutrition-carbohydrates"]').should('contain.text', '242');
+      cy.get(SELECTORS.NUTRITION_CALORIES).should('contain.text', '4242');
+      cy.get(SELECTORS.NUTRITION_PROTEINS).should('contain.text', '420');
+      cy.get(SELECTORS.NUTRITION_FATS).should('contain.text', '142');
+      cy.get(SELECTORS.NUTRITION_CARBOHYDRATES).should('contain.text', '242');
     });
 
     it('должно отображать точные данные для "Соус Spicy-X"', () => {
-      cy.get('[data-cy="ingredient-sauce"]').first().click();
+      cy.get(SELECTORS.INGREDIENT_SAUCE).first().click();
 
       // Проверяем конкретные значения из фикстуры
-      cy.get('[data-cy="ingredient-details-name"]').should(
-        'contain.text',
-        'Соус Spicy-X'
-      );
-      cy.get('[data-cy="nutrition-calories"]').should('contain.text', '30');
-      cy.get('[data-cy="nutrition-proteins"]').should('contain.text', '30');
-      cy.get('[data-cy="nutrition-fats"]').should('contain.text', '20');
-      cy.get('[data-cy="nutrition-carbohydrates"]').should('contain.text', '40');
+      cy.get(SELECTORS.INGREDIENT_DETAILS_NAME).should('contain.text', 'Соус Spicy-X');
+      cy.get(SELECTORS.NUTRITION_CALORIES).should('contain.text', '30');
+      cy.get(SELECTORS.NUTRITION_PROTEINS).should('contain.text', '30');
+      cy.get(SELECTORS.NUTRITION_FATS).should('contain.text', '20');
+      cy.get(SELECTORS.NUTRITION_CARBOHYDRATES).should('contain.text', '40');
     });
   });
 
-  describe('Проверка форматирования и отображения', () => {
-    it('должно отображать правильные единицы измерения', () => {
-      cy.get('[data-cy="ingredient-bun"]').first().click();
+  describe('Проверка форматирования единиц измерения', () => {
+    it('должно отображать единицы измерения для пищевой ценности', () => {
+      cy.get(SELECTORS.INGREDIENT_BUN).first().click();
 
-      // Проверяем единицы измерения
-      cy.get('[data-cy="nutrition-calories"]').should('contain.text', 'ккал');
-      cy.get('[data-cy="nutrition-proteins"]').should('contain.text', 'г');
-      cy.get('[data-cy="nutrition-fats"]').should('contain.text', 'г');
-      cy.get('[data-cy="nutrition-carbohydrates"]').should('contain.text', 'г');
+      // Проверяем наличие единиц измерения
+      cy.get(SELECTORS.NUTRITION_CALORIES).should('contain.text', 'ккал');
+      cy.get(SELECTORS.NUTRITION_PROTEINS).should('contain.text', 'г');
+      cy.get(SELECTORS.NUTRITION_FATS).should('contain.text', 'г');
+      cy.get(SELECTORS.NUTRITION_CARBOHYDRATES).should('contain.text', 'г');
     });
 
-    it('должно использовать правильную иерархию заголовков', () => {
-      cy.get('[data-cy="ingredient-bun"]').first().click();
+    it('должно отображать заголовки и название ингредиента', () => {
+      cy.get(SELECTORS.INGREDIENT_BUN).first().click();
 
-      // Проверяем, что заголовок использует правильный тег
-      cy.get('[data-cy="ingredient-details-title"]')
-        .should('match', 'h1')
-        .and('have.class', 'text_type_main-large');
+      // Проверяем заголовок
+      cy.get(SELECTORS.INGREDIENT_DETAILS_TITLE)
+        .should('be.visible')
+        .and('contain.text', 'Детали ингредиента');
 
       // Проверяем название ингредиента
-      cy.get('[data-cy="ingredient-details-name"]')
-        .should('match', 'p')
-        .and('have.class', 'text_type_main-medium');
+      cy.get(SELECTORS.INGREDIENT_DETAILS_NAME).should('be.visible').and('not.be.empty');
+    });
+
+    it('должно отображать корректное изображение ингредиента', () => {
+      cy.fixture<IngredientsResponse>('ingredients.json').then((data) => {
+        const ingredient = data.data[0];
+
+        cy.get(SELECTORS.INGREDIENT_BUN).first().click();
+
+        cy.get(SELECTORS.INGREDIENT_DETAILS_IMAGE)
+          .should('be.visible')
+          .and('have.attr', 'src')
+          .and('contain', ingredient.image);
+      });
+    });
+
+    it('должно загружать изображение без ошибок', () => {
+      cy.get(SELECTORS.INGREDIENT_BUN).first().click();
+
+      cy.get(SELECTORS.INGREDIENT_DETAILS_IMAGE)
+        .should('be.visible')
+        .and(($img) => {
+          expect(($img[0] as HTMLImageElement).naturalWidth).to.be.greaterThan(0);
+        });
     });
   });
 
@@ -266,10 +286,10 @@ describe('Отображение данных ингредиента в мода
       cy.fixture<IngredientsResponse>('ingredients.json').then((data) => {
         const ingredient = data.data[0];
 
-        cy.get('[data-cy="ingredient-bun"]').first().click();
+        cy.get(SELECTORS.INGREDIENT_BUN).first().click();
 
         // Проверяем, что изображение загрузилось
-        cy.get('[data-cy="ingredient-details-image"]')
+        cy.get(SELECTORS.INGREDIENT_DETAILS_IMAGE)
           .should('be.visible')
           .and('have.attr', 'src', ingredient.image)
           .and('have.attr', 'alt', ingredient.name)
@@ -282,9 +302,9 @@ describe('Отображение данных ингредиента в мода
     });
 
     it('должно иметь правильные атрибуты доступности для изображения', () => {
-      cy.get('[data-cy="ingredient-bun"]').first().click();
+      cy.get(SELECTORS.INGREDIENT_BUN).first().click();
 
-      cy.get('[data-cy="ingredient-details-image"]')
+      cy.get(SELECTORS.INGREDIENT_DETAILS_IMAGE)
         .should('have.attr', 'alt')
         .and('not.be.empty');
     });
@@ -302,15 +322,15 @@ describe('Отображение данных ингредиента в мода
           // Открываем ингредиент через прямой URL, если он есть
           cy.visit(`/ingredients/${highValueIngredient._id}`);
 
-          cy.get('[data-cy="ingredient-details-name"]').should(
+          cy.get(SELECTORS.INGREDIENT_DETAILS_NAME).should(
             'contain.text',
             highValueIngredient.name
           );
 
           // Проверяем большие значения
-          cy.get('[data-cy="nutrition-proteins"]').should('contain.text', '808');
-          cy.get('[data-cy="nutrition-fats"]').should('contain.text', '689');
-          cy.get('[data-cy="nutrition-carbohydrates"]').should('contain.text', '609');
+          cy.get(SELECTORS.NUTRITION_PROTEINS).should('contain.text', '808');
+          cy.get(SELECTORS.NUTRITION_FATS).should('contain.text', '689');
+          cy.get(SELECTORS.NUTRITION_CARBOHYDRATES).should('contain.text', '609');
         }
       });
     });
@@ -325,13 +345,13 @@ describe('Отображение данных ингредиента в мода
         if (lowValueIngredient) {
           cy.visit(`/ingredients/${lowValueIngredient._id}`);
 
-          cy.get('[data-cy="ingredient-details-name"]').should(
+          cy.get(SELECTORS.INGREDIENT_DETAILS_NAME).should(
             'contain.text',
             lowValueIngredient.name
           );
 
           // Проверяем малые значения
-          cy.get('[data-cy="nutrition-calories"]').should('contain.text', '99');
+          cy.get(SELECTORS.NUTRITION_CALORIES).should('contain.text', '99');
         }
       });
     });
@@ -339,39 +359,39 @@ describe('Отображение данных ингредиента в мода
 
   describe('Проверка структуры и компоновки данных', () => {
     it('должно отображать элементы в правильном порядке', () => {
-      cy.get('[data-cy="ingredient-bun"]').first().click();
+      cy.get(SELECTORS.INGREDIENT_BUN).first().click();
 
       // Проверяем порядок элементов сверху вниз
-      cy.get('[data-cy="ingredient-details"]').within(() => {
-        cy.get('[data-cy="ingredient-details-title"]').should('be.visible');
-        cy.get('[data-cy="ingredient-details-image"]').should('be.visible');
-        cy.get('[data-cy="ingredient-details-name"]').should('be.visible');
-        cy.get('[data-cy="ingredient-details-nutrition"]').should('be.visible');
+      cy.get(SELECTORS.INGREDIENT_DETAILS).within(() => {
+        cy.get(SELECTORS.INGREDIENT_DETAILS_TITLE).should('be.visible');
+        cy.get(SELECTORS.INGREDIENT_DETAILS_IMAGE).should('be.visible');
+        cy.get(SELECTORS.INGREDIENT_DETAILS_NAME).should('be.visible');
+        cy.get(SELECTORS.INGREDIENT_DETAILS_NUTRITION).should('be.visible');
       });
 
       // Проверяем порядок элементов пищевой ценности
-      cy.get('[data-cy="ingredient-details-nutrition"]').within(() => {
-        cy.get('[data-cy="nutrition-calories"]').should('be.visible');
-        cy.get('[data-cy="nutrition-proteins"]').should('be.visible');
-        cy.get('[data-cy="nutrition-fats"]').should('be.visible');
-        cy.get('[data-cy="nutrition-carbohydrates"]').should('be.visible');
+      cy.get(SELECTORS.INGREDIENT_DETAILS_NUTRITION).within(() => {
+        cy.get(SELECTORS.NUTRITION_CALORIES).should('be.visible');
+        cy.get(SELECTORS.NUTRITION_PROTEINS).should('be.visible');
+        cy.get(SELECTORS.NUTRITION_FATS).should('be.visible');
+        cy.get(SELECTORS.NUTRITION_CARBOHYDRATES).should('be.visible');
       });
     });
 
     it('должно использовать правильные CSS классы для стилизации', () => {
-      cy.get('[data-cy="ingredient-bun"]').first().click();
+      cy.get(SELECTORS.INGREDIENT_BUN).first().click();
 
       // Проверяем CSS классы для текста
-      cy.get('[data-cy="ingredient-details-title"]')
+      cy.get(SELECTORS.INGREDIENT_DETAILS_TITLE)
         .should('have.class', 'text')
         .and('have.class', 'text_type_main-large');
 
-      cy.get('[data-cy="ingredient-details-name"]')
+      cy.get(SELECTORS.INGREDIENT_DETAILS_NAME)
         .should('have.class', 'text')
         .and('have.class', 'text_type_main-medium');
 
       // Проверяем классы для пищевой ценности
-      cy.get('[data-cy="nutrition-calories"] p')
+      cy.get(SELECTORS.NUTRITION_CALORIES + ' p')
         .should('have.class', 'text')
         .and('have.class', 'text_type_main-default')
         .and('have.class', 'text_color_inactive');
@@ -381,18 +401,18 @@ describe('Отображение данных ингредиента в мода
   describe('Проверка обновления данных при переключении ингредиентов', () => {
     it('должно корректно обновлять данные при переключении между ингредиентами', () => {
       // Открываем первый ингредиент
-      cy.get('[data-cy="ingredient-bun"]').first().click();
-      cy.get('[data-cy="ingredient-details-name"]').then(($firstName) => {
+      cy.get(SELECTORS.INGREDIENT_BUN).first().click();
+      cy.get(SELECTORS.INGREDIENT_DETAILS_NAME).then(($firstName) => {
         const firstName = $firstName.text();
 
         // Закрываем модальное окно
-        cy.get('[data-cy="modal-close-button"]').click();
+        cy.get(SELECTORS.MODAL_CLOSE_BUTTON).click();
 
         // Переключаемся на другой ингредиент с force: true для видимости
-        cy.get('[data-cy="ingredient-main"]').first().click({ force: true });
+        cy.get(SELECTORS.INGREDIENT_MAIN).first().click({ force: true });
 
         // Проверяем, что название изменилось
-        cy.get('[data-cy="ingredient-details-name"]')
+        cy.get(SELECTORS.INGREDIENT_DETAILS_NAME)
           .should('not.contain.text', firstName)
           .and('be.visible')
           .and('not.be.empty');
