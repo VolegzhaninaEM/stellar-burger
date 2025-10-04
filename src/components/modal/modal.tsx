@@ -40,12 +40,13 @@ const Modal: FC<TModalProps> = ({
   return createPortal(
     <>
       <ModalOverlay onClose={onClose} />
-      <div className={modalStyles.modal} role="dialog" aria-modal="true">
+      <div className={modalStyles.modal} role="dialog" aria-modal="true" data-cy="modal">
         <button
           className={modalStyles.closeButton}
           onClick={onClose}
           type="button"
           aria-label="Закрыть модальное окно"
+          data-cy="modal-close-button"
         >
           <CloseIcon type="primary" />
         </button>

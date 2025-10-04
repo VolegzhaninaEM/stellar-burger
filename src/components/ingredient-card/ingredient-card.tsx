@@ -41,14 +41,28 @@ const IngredientCard: FC<TIngredientCardProps> = ({
     }
   }, [drag, drop]);
 
+  const dataCy =
+    ingredient.type === 'bun'
+      ? 'ingredient-bun'
+      : ingredient.type === 'main'
+        ? 'ingredient-main'
+        : 'ingredient-sauce';
+
   return (
-    <div ref={ref} style={{ opacity }} className="mb-4">
+    <div
+      ref={ref}
+      style={{ opacity }}
+      className="mb-4"
+      data-cy={`ingredient-item ${dataCy} constructor-ingredient`}
+    >
       <DragIcon type="primary" />
       <ConstructorElement
         text={ingredient.name}
         price={ingredient.price}
         thumbnail={ingredient.image}
         handleClose={() => deleteElement(ingredient)}
+        extraClass="constructor-element"
+        data-cy="delete-ingredient"
       />
     </div>
   );

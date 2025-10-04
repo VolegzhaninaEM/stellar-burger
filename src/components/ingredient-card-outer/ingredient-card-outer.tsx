@@ -10,7 +10,10 @@ const IngredientCardOuter = (props: {
   bun: TIngredient;
 }): JSX.Element => {
   return (
-    <div className={`${styles.card__outer} ml-8 mr-4 mb-4 mt-4`}>
+    <div
+      className={`${styles.card__outer} ml-8 mr-4 mb-4 mt-4`}
+      data-cy={`constructor-bun-${props.position}`}
+    >
       <ConstructorElement
         type={props.position}
         isLocked={true}

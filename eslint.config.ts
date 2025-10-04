@@ -31,6 +31,7 @@ export default tseslint.config(
   reactHooks.configs['recommended-latest'],
   {
     files: ['**/*.{ts,tsx,js,jsx}'],
+    ignores: ['cypress/**'],
     languageOptions: {
       ecmaVersion: 2020,
       parser: tseslint.parser,
@@ -130,6 +131,39 @@ export default tseslint.config(
           project: './tsconfig.json',
         },
       },
+    },
+  },
+  {
+    files: ['cypress/**/*.{ts,js}'],
+    languageOptions: {
+      ecmaVersion: 2020,
+      parser: tseslint.parser,
+      parserOptions: {
+        ecmaVersion: 'latest',
+        project: ['./cypress/tsconfig.json'],
+        sourceType: 'module',
+        tsconfigRootDir: import.meta.dirname,
+        warnOnUnsupportedTypeScriptVersion: false,
+      },
+      globals: {
+        ...globals.browser,
+        cy: 'readonly',
+        Cypress: 'readonly',
+        expect: 'readonly',
+      },
+    },
+    plugins: {
+      '@typescript-eslint': tseslint.plugin,
+    },
+    rules: {
+      '@typescript-eslint/consistent-type-definitions': ['error', 'type'],
+      '@typescript-eslint/no-unused-vars': 'off',
+      '@typescript-eslint/explicit-function-return-type': 'off',
+      '@typescript-eslint/explicit-module-boundary-types': 'off',
+      '@typescript-eslint/prefer-nullish-coalescing': 'off',
+      '@typescript-eslint/no-unsafe-assignment': 'off',
+      '@typescript-eslint/no-unsafe-member-access': 'off',
+      '@typescript-eslint/no-unsafe-call': 'off',
     },
   },
   eslintPluginPrettierRecommended
