@@ -32,7 +32,9 @@ const FinalPrice = ({
   return (
     <div className={`${styles.burger_currency} ${styles.burger_price}`}>
       <div className={styles.burger_currency}>
-        <p className="text text_type_main-medium mr-2">{totalPrice}</p>
+        <p className="text text_type_main-medium mr-2" data-cy="total-price">
+          {totalPrice}
+        </p>
         <CurrencyIcon type="primary" className="text text_type_main-medium mr-2" />
       </div>
       <Button
@@ -41,6 +43,7 @@ const FinalPrice = ({
         size="medium"
         onClick={handleOrderButtonClick}
         disabled={!hasBuns}
+        data-cy="order-button"
       >
         {caption}
       </Button>

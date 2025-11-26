@@ -1,5 +1,6 @@
-# Стартер на TypeScript для проекта Stellar Burger
+# Stellar Burger
 
+### Демо: https://volegzhanina.em.nomorepartiessbs.ru/
 ## Процедура создания коммита с проверками
 
 При создании коммита автоматически запускаются проверка линтерами `stylelint`, `eslint` и форматирование `prettier`.

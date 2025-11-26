@@ -18,7 +18,6 @@ export default defineConfig({
       esmExport: true,
     }),
   ],
-  base: '',
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),

@@ -19,6 +19,7 @@ const Cards = (props: TCards): JSX.Element => {
                 data={data}
                 card={card}
                 handleIngredientClick={handleIngredientClick}
+                data-cy={`ingredient-${card.type}`}
               />
             </li>
           ) : null;

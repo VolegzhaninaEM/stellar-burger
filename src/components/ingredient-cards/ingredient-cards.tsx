@@ -64,8 +64,11 @@ const IngredientCards = (props: { extendedClass?: string }): JSX.Element => {
       ref={dropIngredient as unknown as React.Ref<HTMLDivElement>}
       style={{ opacity }}
       className={`${ingredientCardsStyles.cards}`}
+      data-cy="constructor-ingredients"
     >
-      {buns && <IngredientCardOuter position={'top'} bun={buns} />}
+      {buns && (
+        <IngredientCardOuter position={'top'} bun={buns} data-cy="constructor-bun-top" />
+      )}
       <div className={props.extendedClass}>
         {ingredients?.map((ingredient: TConstructorIngredient, index: number) => {
           if (!ingredient) return null;
@@ -78,11 +81,18 @@ const IngredientCards = (props: { extendedClass?: string }): JSX.Element => {
               moveIngredient={(from: number, to: number) =>
                 dispatch(moveIngredient({ dragIndex: from, hoverIndex: to }))
               }
+              data-cy="constructor-ingredient"
             />
           );
         })}
       </div>
-      {buns && <IngredientCardOuter position={'bottom'} bun={buns} />}
+      {buns && (
+        <IngredientCardOuter
+          position={'bottom'}
+          bun={buns}
+          data-cy="constructor-bun-bottom"
+        />
+      )}
     </div>
   );
 };
